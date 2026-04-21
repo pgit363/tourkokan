@@ -138,6 +138,7 @@ export const LocationInputField: FC<Props> = ({
   //  a custom hook that listens for clicks outside the container
   useInteractOutside(containerRef, closePopover)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleInputChange = useCallback(
     _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
       setShowPopover(true)
