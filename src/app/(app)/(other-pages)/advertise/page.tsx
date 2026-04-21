@@ -10,7 +10,7 @@ interface BannerPackage {
   description?: string
   price: number
   duration_days?: number
-  features?: string[]
+  allowed_placements?: string[]
 }
 
 const AdvertisePage = () => {
@@ -20,6 +20,7 @@ const AdvertisePage = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
 
   useEffect(() => {
     fetch(`${API_BASE}/v2/advertisingPackages`, {
@@ -54,11 +55,18 @@ const AdvertisePage = () => {
       })
       const data = await res.json()
       if (!res.ok) {
-        setErrorMsg(data?.message ?? 'Something went wrong. Please try again.')
+        if (data?.message && typeof data.message === 'object') {
+          setFieldErrors(data.message as Record<string, string[]>)
+          setErrorMsg('')
+        } else {
+          setErrorMsg(data?.message ?? 'Something went wrong. Please try again.')
+          setFieldErrors({})
+        }
         setStatus('error')
       } else {
         setStatus('success')
         setForm({ name: '', email: '', phone: '', message: '' })
+        setFieldErrors({})
       }
     } catch {
       setErrorMsg('Unable to reach the server. Please try again later.')
@@ -170,17 +178,22 @@ const AdvertisePage = () => {
                       {pkg.description}
                     </p>
                   )}
-                  {Array.isArray(pkg.features) && pkg.features.length > 0 && (
-                    <ul className="mt-4 space-y-2">
-                      {pkg.features.map((f) => (
-                        <li key={f} className={`flex items-center gap-2 text-sm ${idx === 1 ? 'text-primary-100' : 'text-neutral-600 dark:text-neutral-400'}`}>
-                          <svg className={`h-4 w-4 shrink-0 ${idx === 1 ? 'text-white' : 'text-green-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
+                  {Array.isArray(pkg.allowed_placements) && pkg.allowed_placements.length > 0 && (
+                    <div className="mt-4">
+                      <p className={`mb-2 text-xs font-semibold uppercase tracking-wide ${idx === 1 ? 'text-primary-200' : 'text-neutral-400'}`}>
+                        Placements
+                      </p>
+                      <ul className="space-y-1.5">
+                        {pkg.allowed_placements.map((placement) => (
+                          <li key={placement} className={`flex items-center gap-2 text-sm ${idx === 1 ? 'text-primary-100' : 'text-neutral-600 dark:text-neutral-400'}`}>
+                            <svg className={`h-4 w-4 shrink-0 ${idx === 1 ? 'text-white' : 'text-green-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            {placement}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
                 </div>
               ))}
@@ -237,6 +250,7 @@ const AdvertisePage = () => {
                       placeholder="Your name or business"
                       className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                     />
+                    {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name[0]}</p>}
                   </div>
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -249,6 +263,7 @@ const AdvertisePage = () => {
                       placeholder="+91 98765 43210"
                       className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                     />
+                    {fieldErrors.phone && <p className="mt-1 text-xs text-red-500">{fieldErrors.phone[0]}</p>}
                   </div>
                 </div>
 
@@ -264,6 +279,7 @@ const AdvertisePage = () => {
                     placeholder="you@example.com"
                     className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                   />
+                  {fieldErrors.email && <p className="mt-1 text-xs text-red-500">{fieldErrors.email[0]}</p>}
                 </div>
 
                 <div>
@@ -278,6 +294,7 @@ const AdvertisePage = () => {
                     placeholder="Describe your business, location, and what kind of advertising you're looking for..."
                     className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                   />
+                  {fieldErrors.message && <p className="mt-1 text-xs text-red-500">{fieldErrors.message[0]}</p>}
                 </div>
 
                 {status === 'error' && (

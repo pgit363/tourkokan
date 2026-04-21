@@ -1,19 +1,11 @@
 'use client'
 
-import { ApiError, categoriesApi, Category, galleryApi, GalleryItem } from '@/lib/api'
+import { ApiError, ftpUrl, galleryApi, GalleryItem } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import { useEffect, useState } from 'react'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://probytesolution.in'
-
-function mediaUrl(path?: string) {
-  if (!path) return null
-  if (path.startsWith('http')) return path
-  return `${BACKEND_URL}/storage/${path}`
-}
-
 const GalleryCard = ({ item, onClick }: { item: GalleryItem; onClick: () => void }) => {
-  const imgUrl = mediaUrl(item.path)
+  const imgUrl = ftpUrl(item.path)
   return (
     <button
       onClick={onClick}
@@ -42,19 +34,13 @@ const GalleryCard = ({ item, onClick }: { item: GalleryItem; onClick: () => void
 
 export default function GalleryPage() {
   const [items, setItems] = useState<GalleryItem[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null)
-
-  useEffect(() => {
-    categoriesApi.list().then((res) => setCategories(res.data.data)).catch(() => {})
-  }, [])
 
   const fetchItems = async (reset = false) => {
     setLoading(true)
@@ -63,7 +49,6 @@ export default function GalleryPage() {
     try {
       const res = await galleryApi.list({
         search: search || undefined,
-        category: selectedCategory || undefined,
         per_page: 20,
         page: currentPage,
       })
@@ -81,7 +66,7 @@ export default function GalleryPage() {
   useEffect(() => {
     fetchItems(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, selectedCategory])
+  }, [search])
 
   const handleLoadMore = async () => {
     const next = page + 1
@@ -91,7 +76,6 @@ export default function GalleryPage() {
     try {
       const res = await galleryApi.list({
         search: search || undefined,
-        category: selectedCategory || undefined,
         per_page: 20,
         page: next,
       })
@@ -119,18 +103,6 @@ export default function GalleryPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white sm:max-w-xs"
         />
-        {categories.length > 0 && (
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.code}>{c.name}</option>
-            ))}
-          </select>
-        )}
       </div>
 
       {error && (
@@ -183,9 +155,9 @@ export default function GalleryPage() {
             </svg>
           </button>
           <div className="max-h-[90vh] max-w-5xl" onClick={(e) => e.stopPropagation()}>
-            {mediaUrl(lightbox.path) && (
+            {ftpUrl(lightbox.path) && (
               <img
-                src={mediaUrl(lightbox.path)!}
+                src={ftpUrl(lightbox.path)!}
                 alt={lightbox.title ?? 'Gallery photo'}
                 className="max-h-[80vh] rounded-2xl object-contain"
               />

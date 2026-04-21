@@ -2,7 +2,7 @@
 
 import { ApiError, Route, routesApi, sitesApi, Site } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const RouteCard = ({ route }: { route: Route }) => (
   <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
@@ -55,7 +55,7 @@ const RouteCard = ({ route }: { route: Route }) => (
     {/* Stops */}
     {route.routeStops && route.routeStops.length > 0 && (
       <div className="mt-4 border-t border-neutral-100 pt-4 dark:border-neutral-700">
-        <p className="mb-2 text-xs font-medium text-neutral-400 uppercase tracking-wide">Stops</p>
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-400">Stops</p>
         <div className="flex flex-wrap gap-2">
           {route.routeStops.map((stop, i) => (
             <span key={stop.id} className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300">
@@ -69,11 +69,89 @@ const RouteCard = ({ route }: { route: Route }) => (
   </div>
 )
 
+function BusDropdown({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: Site | null
+  onChange: (s: Site | null) => void
+}) {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const [options, setOptions] = useState<Site[]>([])
+  const [loadingOpts, setLoadingOpts] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    setLoadingOpts(true)
+    sitesApi
+      .busDropdown({ search: query })
+      .then((res) => setOptions(res.data.data.data.data))
+      .catch(() => setOptions([]))
+      .finally(() => setLoadingOpts(false))
+  }, [open, query])
+
+  const displayValue = value ? value.name : ''
+
+  return (
+    <div ref={ref} className="relative flex-1">
+      <label className="mb-1 block text-sm text-neutral-600 dark:text-neutral-400">{label}</label>
+      <input
+        type="text"
+        value={open ? query : displayValue}
+        placeholder={`Select ${label.toLowerCase()}`}
+        onFocus={() => { setQuery(''); setOpen(true) }}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+        className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-white"
+      />
+      {value && !open && (
+        <button
+          type="button"
+          onClick={() => { onChange(null); setQuery('') }}
+          className="absolute right-3 top-9 text-neutral-400 hover:text-neutral-600"
+        >
+          ×
+        </button>
+      )}
+      {open && (
+        <div className="absolute z-10 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+          {loadingOpts ? (
+            <div className="px-4 py-3 text-sm text-neutral-400">Loading…</div>
+          ) : options.length === 0 ? (
+            <div className="px-4 py-3 text-sm text-neutral-400">No results</div>
+          ) : (
+            options.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onMouseDown={() => { onChange(s); setOpen(false); setQuery('') }}
+                className="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-200 dark:hover:bg-neutral-700"
+              >
+                {s.name}
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function BusRoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([])
-  const [allSites, setAllSites] = useState<Site[]>([])
-  const [sourceSite, setSourceSite] = useState('')
-  const [destSite, setDestSite] = useState('')
+  const [sourceSite, setSourceSite] = useState<Site | null>(null)
+  const [destSite, setDestSite] = useState<Site | null>(null)
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -81,15 +159,6 @@ export default function BusRoutesPage() {
   const [error, setError] = useState('')
   const [showDownloadModal, setShowDownloadModal] = useState(false)
 
-  // Load site dropdown (for source/dest search)
-  useEffect(() => {
-    sitesApi
-      .list({ per_page: 200 })
-      .then((res) => setAllSites(res.data.data))
-      .catch(() => {})
-  }, [])
-
-  // Initial load
   useEffect(() => {
     fetchRoutes(1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,8 +193,8 @@ export default function BusRoutesPage() {
     setError('')
     try {
       const params: Record<string, number> = {}
-      if (sourceSite) params.source_place_id = Number(sourceSite)
-      if (destSite) params.destination_place_id = Number(destSite)
+      if (sourceSite) params.source_place_id = sourceSite.id
+      if (destSite) params.destination_place_id = destSite.id
       const res = await routesApi.search(params)
       setRoutes(res.data.data)
       setLastPage(res.data.last_page)
@@ -138,8 +207,8 @@ export default function BusRoutesPage() {
   }
 
   const clearSearch = () => {
-    setSourceSite('')
-    setDestSite('')
+    setSourceSite(null)
+    setDestSite(null)
     fetchRoutes(1)
   }
 
@@ -154,32 +223,8 @@ export default function BusRoutesPage() {
       <form onSubmit={handleSearch} className="mb-8 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
         <h2 className="mb-4 font-semibold text-neutral-900 dark:text-white">Search Routes</h2>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div className="flex-1">
-            <label className="mb-1 block text-sm text-neutral-600 dark:text-neutral-400">From</label>
-            <select
-              value={sourceSite}
-              onChange={(e) => setSourceSite(e.target.value)}
-              className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-white"
-            >
-              <option value="">Select source</option>
-              {allSites.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex-1">
-            <label className="mb-1 block text-sm text-neutral-600 dark:text-neutral-400">To</label>
-            <select
-              value={destSite}
-              onChange={(e) => setDestSite(e.target.value)}
-              className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-white"
-            >
-              <option value="">Select destination</option>
-              {allSites.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </div>
+          <BusDropdown label="From" value={sourceSite} onChange={setSourceSite} />
+          <BusDropdown label="To" value={destSite} onChange={setDestSite} />
           <div className="flex gap-2">
             <button
               type="submit"
@@ -207,7 +252,6 @@ export default function BusRoutesPage() {
         </div>
       )}
 
-      {/* Routes list */}
       {routes.length === 0 && !loading ? (
         <div className="py-20 text-center text-neutral-400">No routes found.</div>
       ) : (

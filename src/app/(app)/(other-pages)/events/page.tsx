@@ -1,17 +1,9 @@
 'use client'
 
-import { ApiError, Event, eventsApi } from '@/lib/api'
+import { ApiError, Event, eventsApi, ftpUrl } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://probytesolution.in'
-
-function mediaUrl(path?: string) {
-  if (!path) return null
-  if (path.startsWith('http')) return path
-  return `${BACKEND_URL}/storage/${path}`
-}
 
 function formatDate(dateStr?: string) {
   if (!dateStr) return ''
@@ -19,7 +11,7 @@ function formatDate(dateStr?: string) {
 }
 
 const EventCard = ({ event }: { event: Event }) => {
-  const imgUrl = mediaUrl(event.image)
+  const imgUrl = ftpUrl(event.image)
   return (
     <Link
       href={`/events/${event.slug}`}

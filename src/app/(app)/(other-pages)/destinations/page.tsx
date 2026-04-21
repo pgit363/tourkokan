@@ -1,22 +1,12 @@
 'use client'
 
-import { ApiError, sitesApi, categoriesApi, Site, Category } from '@/lib/api'
+import { ApiError, sitesApi, categoriesApi, ftpUrl, Site, Category } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
-import { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://probytesolution.in'
-
-function siteImageUrl(path?: string) {
-  if (!path) return null
-  if (path.startsWith('http')) return path
-  return `${BACKEND_URL}/storage/${path}`
-}
-
 const DestinationCard = ({ site }: { site: Site }) => {
-  const imgUrl = siteImageUrl(site.image)
+  const imgUrl = ftpUrl(site.image)
   return (
     <Link
       href={`/destinations/${site.id}`}
@@ -154,9 +144,20 @@ export default function DestinationsPage() {
             className="rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
           >
             <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.code}>{c.name}</option>
-            ))}
+            {categories
+              .filter((c) => !c.parent_id)
+              .map((parent) => {
+                const children = categories.filter((c) => c.parent_id === parent.id)
+                return children.length > 0 ? (
+                  <optgroup key={parent.id} label={parent.name}>
+                    {children.map((sub) => (
+                      <option key={sub.id} value={sub.name}>{sub.name}</option>
+                    ))}
+                  </optgroup>
+                ) : (
+                  <option key={parent.id} value={parent.name}>{parent.name}</option>
+                )
+              })}
           </select>
         )}
       </div>

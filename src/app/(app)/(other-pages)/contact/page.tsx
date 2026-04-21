@@ -7,6 +7,7 @@ const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -32,11 +33,18 @@ const ContactPage = () => {
       })
       const data = await res.json()
       if (!res.ok) {
-        setErrorMsg(data?.message ?? 'Something went wrong. Please try again.')
+        if (data?.message && typeof data.message === 'object') {
+          setFieldErrors(data.message as Record<string, string[]>)
+          setErrorMsg('')
+        } else {
+          setErrorMsg(data?.message ?? 'Something went wrong. Please try again.')
+          setFieldErrors({})
+        }
         setStatus('error')
       } else {
         setStatus('success')
         setForm({ name: '', email: '', phone: '', message: '' })
+        setFieldErrors({})
       }
     } catch {
       setErrorMsg('Unable to reach the server. Please try again later.')
@@ -167,6 +175,7 @@ const ContactPage = () => {
                         placeholder="Your name"
                         className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                       />
+                      {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name[0]}</p>}
                     </div>
                     <div>
                       <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -179,6 +188,7 @@ const ContactPage = () => {
                         placeholder="+91 98765 43210"
                         className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                       />
+                      {fieldErrors.phone && <p className="mt-1 text-xs text-red-500">{fieldErrors.phone[0]}</p>}
                     </div>
                   </div>
 
@@ -194,6 +204,7 @@ const ContactPage = () => {
                       placeholder="you@example.com"
                       className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                     />
+                    {fieldErrors.email && <p className="mt-1 text-xs text-red-500">{fieldErrors.email[0]}</p>}
                   </div>
 
                   <div>
@@ -209,6 +220,7 @@ const ContactPage = () => {
                       placeholder="How can we help you?"
                       className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                     />
+                    {fieldErrors.message && <p className="mt-1 text-xs text-red-500">{fieldErrors.message[0]}</p>}
                   </div>
 
                   {status === 'error' && (
