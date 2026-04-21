@@ -2,10 +2,10 @@ import { Metadata } from 'next'
 import { ApplicationLayout } from '../application-layout'
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: 'TourKokan — Discover the Magic of Konkan',
   description:
-    'Chisfis is a modern and elegant template for Next.js, Tailwind CSS, and TypeScript. It is designed to be simple and easy to use, with a focus on performance and accessibility.',
-  keywords: ['Next.js', 'Tailwind CSS', 'TypeScript', 'Chisfis', 'Travel', 'E-commerce', 'Booking', 'Cars'],
+    "Your ultimate travel companion for exploring the pristine beaches, ancient forts, lush forests, and vibrant culture of Maharashtra's Konkan coast.",
+  keywords: ['TourKokan', 'Konkan Tourism', 'Maharashtra Travel', 'Malvan', 'Ratnagiri', 'Sindhudurg', 'Konkan App'],
 }
 
 export default function Layout({ children, params }: { children: React.ReactNode; params: any }) {
