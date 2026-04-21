@@ -1,6 +1,7 @@
 'use client'
 
 import { AppStoreBadgeSoon, PlayStoreBadge } from '@/components/brand/AppBadges'
+import Image from 'next/image'
 
 const HeroSection = () => {
   return (
@@ -72,97 +73,39 @@ const HeroSection = () => {
             <div className="absolute inset-0 scale-95 rounded-[3rem] bg-primary-500 opacity-30 blur-2xl" />
 
             {/* Phone shell */}
-            <div className="relative z-10 h-[600px] w-[300px] overflow-hidden rounded-[3rem] border-4 border-neutral-700 bg-neutral-800 shadow-2xl">
-              {/* Status bar */}
-              <div className="flex items-center justify-between px-6 pt-4 pb-2">
-                <span className="text-xs font-medium text-white">9:41</span>
-                <div className="flex gap-1">
-                  <div className="h-2.5 w-1 rounded-full bg-white" />
-                  <div className="h-2.5 w-1 rounded-full bg-white" />
-                  <div className="h-2.5 w-1 rounded-full bg-white opacity-60" />
-                </div>
-              </div>
-
-              {/* App header */}
-              <div className="bg-gradient-to-r from-primary-600 to-primary-500 px-5 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-white/20" />
-                  <div>
-                    <div className="text-xs text-primary-100">Good morning!</div>
-                    <div className="text-sm font-semibold text-white">Where to today?</div>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/20 px-3 py-2">
-                  <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  <span className="text-xs text-white/80">Search destinations...</span>
-                </div>
-              </div>
-
-              {/* Content cards */}
-              <div className="space-y-3 p-4">
-                {/* Featured card */}
-                <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-secondary-700 to-secondary-900">
-                  <div className="p-4">
-                    <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs text-white">Featured</span>
-                    <div className="mt-2 text-base font-bold text-white">Sindhudurg Fort</div>
-                    <div className="text-xs text-secondary-200">Malvan, Sindhudurg</div>
-                    <div className="mt-2 flex items-center gap-1">
-                      <svg className="h-3 w-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                      <span className="text-xs text-white">4.8 · Historical Fort</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mini cards row */}
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { name: 'Ganpatipule', type: 'Beach', color: 'from-blue-600 to-blue-800' },
-                    { name: 'Ratnagiri', type: 'City', color: 'from-orange-600 to-orange-800' },
-                  ].map((place) => (
-                    <div key={place.name} className={`rounded-xl bg-gradient-to-br ${place.color} p-3`}>
-                      <div className="text-xs font-semibold text-white">{place.name}</div>
-                      <div className="text-xs text-white/70">{place.type}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Route card */}
-                <div className="rounded-xl border border-neutral-700 bg-neutral-700 p-3">
-                  <div className="text-xs font-semibold text-white">🚌 Next Bus</div>
-                  <div className="mt-1 flex items-center justify-between">
-                    <div className="text-xs text-neutral-300">Mumbai → Ratnagiri</div>
-                    <div className="rounded bg-primary-600 px-2 py-0.5 text-xs font-medium text-white">8:30 AM</div>
-                  </div>
-                </div>
-              </div>
+            <div className="relative z-10 w-[285px] overflow-hidden rounded-[3rem] border-4 border-neutral-700 bg-black shadow-2xl sm:w-[300px]" style={{ aspectRatio: '1080/2340' }}>
+              <Image
+                src="/app-screenshot.png"
+                alt="TourKokan App"
+                fill
+                className="object-fill"
+                sizes="300px"
+                priority
+              />
             </div>
 
             {/* Floating badges */}
-            <div className="absolute -right-8 top-16 flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-xl dark:bg-neutral-800">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
-                <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="absolute right-0 top-32 z-20 flex translate-x-1/2 items-center gap-2 rounded-2xl bg-green-500 px-3 py-2 shadow-xl">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-semibold text-neutral-800 dark:text-white">Live Tracking</div>
-                <div className="text-xs text-neutral-500">Real-time routes</div>
+                <div className="text-xs font-semibold text-white">100+ Destinations</div>
+                <div className="text-xs text-green-100">Across Konkan coast</div>
               </div>
             </div>
 
-            <div className="absolute -left-8 bottom-24 flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-xl dark:bg-neutral-800">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
-                <svg className="h-4 w-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            <div className="absolute left-0 bottom-24 z-20 flex -translate-x-1/2 items-center gap-2 rounded-2xl bg-primary-600 px-3 py-2 shadow-xl">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-semibold text-neutral-800 dark:text-white">4.8 Rating</div>
-                <div className="text-xs text-neutral-500">Play Store</div>
+                <div className="text-xs font-semibold text-white">4.8 Rating</div>
+                <div className="text-xs text-primary-100">Play Store</div>
               </div>
             </div>
           </div>
