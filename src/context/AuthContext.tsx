@@ -8,6 +8,7 @@ interface AuthContextValue {
   isLoggedIn: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
+  loginAsGuest: () => Promise<void>
   logout: () => Promise<void>
   refreshUser: () => Promise<void>
 }
@@ -29,6 +30,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const res = await authApi.login(email, password)
+    setToken(res.access_token)
+    setStoredUser(res.user)
+    setUser(res.user)
+  }
+
+  const loginAsGuest = async () => {
+    const guestName = `Guest_${Math.random().toString(36).slice(2, 10).toUpperCase()}`
+    const res = await authApi.guestRegister(guestName)
     setToken(res.access_token)
     setStoredUser(res.user)
     setUser(res.user)
@@ -59,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, isLoading, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, isLoading, login, loginAsGuest, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

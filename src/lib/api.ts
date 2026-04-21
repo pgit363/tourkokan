@@ -272,6 +272,18 @@ export const authApi = {
     return res.data
   },
 
+  guestRegister: async (name: string) => {
+    const form = new FormData()
+    form.append('name', name)
+    form.append('is_guest', 'true')
+    const res = await apiFetch<{ data: AuthResponse }>('/v2/auth/register', {
+      method: 'POST',
+      body: form,
+      skipAuth: true,
+    })
+    return res.data
+  },
+
   sendOtp: (email: string) =>
     apiFetch('/v2/auth/sendOtp', {
       method: 'POST',
@@ -313,6 +325,12 @@ export const sitesApi = {
     apiFetch<{ data: Pagination<Site> }>('/v2/sites', {
       method: 'POST',
       body: JSON.stringify({ apitype: 'list', ...params }),
+    }),
+
+  addSite: (form: FormData) =>
+    apiFetch<{ data: Site; message?: string }>('/v2/addSite', {
+      method: 'POST',
+      body: form,
     }),
 
   busDropdown: (params: { search?: string; page?: number } = {}) =>

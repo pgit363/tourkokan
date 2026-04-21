@@ -1,5 +1,13 @@
+'use client'
+
 import Logo from '@/shared/Logo'
+import GuestAuthModal from '@/components/brand/GuestAuthModal'
+import { useAuth } from '@/context/AuthContext'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
+const protectedHrefs = new Set(['/destinations', '/events', '/bus-routes', '/gallery'])
 
 const footerLinks = {
   Explore: [
@@ -10,11 +18,12 @@ const footerLinks = {
   ],
   Company: [
     { label: 'About Tourkokan', href: '/about' },
+    { label: 'Add a Place', href: '/add-place' },
     { label: 'Advertise with Us', href: '/advertise' },
     { label: 'Contact Us', href: '/contact' },
   ],
   Support: [
-    { label: 'Help Center', href: '/contact' },
+    { label: 'Help Center', href: '/help-center' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms & Conditions', href: '/terms' },
     { label: 'Delete My Account', href: '/delete-account' },
@@ -52,84 +61,113 @@ const socialLinks = [
 ]
 
 const BrandFooter = () => {
+  const { isLoggedIn } = useAuth()
+  const router = useRouter()
+  const [guestModalOpen, setGuestModalOpen] = useState(false)
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
+
+  const handleLinkClick = (href: string) => (e: React.MouseEvent) => {
+    if (protectedHrefs.has(href) && !isLoggedIn) {
+      e.preventDefault()
+      setPendingHref(href)
+      setGuestModalOpen(true)
+    }
+  }
+
+  const handleGuestSuccess = () => {
+    if (pendingHref) {
+      router.push(pendingHref)
+      setPendingHref(null)
+    }
+  }
+
   return (
-    <footer className="border-t border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
-      <div className="container py-16 lg:py-20">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-6">
-          {/* Brand column */}
-          <div className="col-span-2 lg:col-span-3">
-            <Logo className="w-28" />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-              Your ultimate guide to exploring the pristine beauty of Maharashtra&apos;s Konkan coast. Available on
-              Google Play — iOS coming soon.
-            </p>
+    <>
+      <footer className="border-t border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="container py-16 lg:py-20">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-6">
+            {/* Brand column */}
+            <div className="col-span-2 lg:col-span-3">
+              <Logo className="w-28" />
+              <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Your ultimate guide to exploring the pristine beauty of Maharashtra&apos;s Konkan coast. Available on
+                Google Play — iOS coming soon.
+              </p>
 
-            {/* Social links */}
-            <div className="mt-6 flex items-center gap-3">
-              {socialLinks.map((s) => (
+              {/* Social links */}
+              <div className="mt-6 flex items-center gap-3">
+                {socialLinks.map((s) => (
+                  <Link
+                    key={s.name}
+                    href={s.href}
+                    aria-label={s.name}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-primary-500 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-400"
+                  >
+                    {s.icon}
+                  </Link>
+                ))}
+              </div>
+
+              {/* App badges */}
+              <div className="mt-6 flex items-center gap-2">
                 <Link
-                  key={s.name}
-                  href={s.href}
-                  aria-label={s.name}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-primary-500 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-400"
+                  href="https://play.google.com/store/apps/details?id=com.tourkokan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-700 dark:bg-neutral-700"
                 >
-                  {s.icon}
+                  <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 20.5v-17c0-.83 1.01-1.3 1.68-.79l14 8.5c.6.36.6 1.22 0 1.58l-14 8.5C4.01 21.8 3 21.33 3 20.5z" />
+                  </svg>
+                  Google Play
                 </Link>
-              ))}
-            </div>
-
-            {/* App badges */}
-            <div className="mt-6 flex items-center gap-2">
-              <Link
-                href="https://play.google.com/store/apps/details?id=com.tourkokan"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-700 dark:bg-neutral-700"
-              >
-                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 20.5v-17c0-.83 1.01-1.3 1.68-.79l14 8.5c.6.36.6 1.22 0 1.58l-14 8.5C4.01 21.8 3 21.33 3 20.5z" />
-                </svg>
-                Google Play
-              </Link>
-              <div className="flex items-center gap-1.5 rounded-lg bg-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-500 dark:bg-neutral-700 dark:text-neutral-400">
-                iOS — Coming Soon
+                <div className="flex items-center gap-1.5 rounded-lg bg-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-500 dark:bg-neutral-700 dark:text-neutral-400">
+                  iOS — Coming Soon
+                </div>
               </div>
             </div>
+
+            {/* Link columns */}
+            {Object.entries(footerLinks).map(([title, links]) => (
+              <div key={title}>
+                <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">{title}</h3>
+                <ul className="mt-4 space-y-3">
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        onClick={handleLinkClick(link.href)}
+                        target={link.href.startsWith('http') ? '_blank' : undefined}
+                        rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        className="text-sm text-neutral-500 transition hover:text-primary-600 dark:text-neutral-400 dark:hover:text-primary-400"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
 
-          {/* Link columns */}
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">{title}</h3>
-              <ul className="mt-4 space-y-3">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      target={link.href.startsWith('http') ? '_blank' : undefined}
-                      rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      className="text-sm text-neutral-500 transition hover:text-primary-600 dark:text-neutral-400 dark:hover:text-primary-400"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Bottom bar */}
+          <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-neutral-100 pt-8 sm:flex-row dark:border-neutral-800">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              © {new Date().getFullYear()} TourKokan. All rights reserved.
+            </p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-500">
+              Made with ❤️ for Konkan travellers
+            </p>
+          </div>
         </div>
+      </footer>
 
-        {/* Bottom bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-neutral-100 pt-8 sm:flex-row dark:border-neutral-800">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            © {new Date().getFullYear()} TourKokan. All rights reserved.
-          </p>
-          <p className="text-xs text-neutral-400 dark:text-neutral-500">
-            Made with ❤️ for Konkan travellers
-          </p>
-        </div>
-      </div>
-    </footer>
+      <GuestAuthModal
+        isOpen={guestModalOpen}
+        onClose={() => { setGuestModalOpen(false); setPendingHref(null) }}
+        onSuccess={handleGuestSuccess}
+      />
+    </>
   )
 }
 
