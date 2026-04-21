@@ -48,7 +48,6 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@tailwindcss/postcss": "^4.1.5",
     "@types/lodash": "^4.17.13",
     "postcss": "^8.4.31",
