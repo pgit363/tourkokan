@@ -9,8 +9,8 @@
     "dev:dev": "NEXT_PUBLIC_API_URL=https://probytesolution.in next dev",
     "build": "next build",
     "build:dev": "NEXT_PUBLIC_API_URL=https://probytesolution.in next build",
-    "build:cf": "npx @cloudflare/next-on-pages",
-    "deploy:cf": "npx @cloudflare/next-on-pages && wrangler pages deploy",
+    "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "start": "next start",
     "lint": "next lint"
   },
@@ -20,6 +20,7 @@
     "@heroicons/react": "^2.2.0",
     "@hugeicons/core-free-icons": "^1.0.14",
     "@hugeicons/react": "^1.0.5",
+    "@opennextjs/cloudflare": "^1.19.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
