@@ -240,25 +240,29 @@ export interface Pagination<T> {
 // ── Auth API ──────────────────────────────────────────────────────────────────
 
 export const authApi = {
-  login: (email: string, password: string) =>
-    apiFetch<AuthResponse>('/v2/auth/login', {
+  login: async (email: string, password: string) => {
+    const res = await apiFetch<{ data: AuthResponse }>('/v2/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
       skipAuth: true,
-    }),
+    })
+    return res.data
+  },
 
-  register: (data: {
+  register: async (data: {
     name: string
     email?: string
     mobile?: string
     password?: string
     language?: 'en' | 'mr'
-  }) =>
-    apiFetch<AuthResponse>('/v2/auth/register', {
+  }) => {
+    const res = await apiFetch<{ data: AuthResponse }>('/v2/auth/register', {
       method: 'POST',
       body: JSON.stringify({ language: 'en', ...data }),
       skipAuth: true,
-    }),
+    })
+    return res.data
+  },
 
   sendOtp: (email: string) =>
     apiFetch('/v2/auth/sendOtp', {
