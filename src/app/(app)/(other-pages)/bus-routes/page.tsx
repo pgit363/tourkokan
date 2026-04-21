@@ -97,7 +97,7 @@ function BusDropdown({
     setLoadingOpts(true)
     sitesApi
       .busDropdown({ search: query })
-      .then((res) => setOptions(res.data.data.data.data))
+      .then((res) => setOptions(res.data.data.data))
       .catch(() => setOptions([]))
       .finally(() => setLoadingOpts(false))
   }, [open, query])
