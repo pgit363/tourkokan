@@ -1,6 +1,7 @@
 'use client'
 
 import { ApiError, categoriesApi, Category, galleryApi, GalleryItem } from '@/lib/api'
+import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import { useEffect, useState } from 'react'
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://probytesolution.in'
@@ -48,6 +49,7 @@ export default function GalleryPage() {
   const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null)
 
   useEffect(() => {
@@ -83,6 +85,7 @@ export default function GalleryPage() {
 
   const handleLoadMore = async () => {
     const next = page + 1
+    if (next >= 3) { setShowDownloadModal(true); return }
     setPage(next)
     setLoading(true)
     try {
@@ -198,6 +201,7 @@ export default function GalleryPage() {
           </div>
         </div>
       )}
+      <DownloadAppModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="See More Photos" />
     </div>
   )
 }

@@ -5,6 +5,14 @@
  */
 
 export const API_BASE = '/api/proxy'
+export const FTP_PATH = process.env.NEXT_PUBLIC_FTP_PATH ?? 'https://ftp.dev.tourkokan.com/'
+
+/** Prefix a relative image path with the FTP base URL */
+export function ftpUrl(path?: string | null): string | null {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  return `${FTP_PATH}${path.startsWith('/') ? path.slice(1) : path}`
+}
 
 // ── Token helpers ─────────────────────────────────────────────────────────────
 
@@ -305,6 +313,12 @@ export const sitesApi = {
     apiFetch<{ data: Pagination<Site> }>('/v2/sites', {
       method: 'POST',
       body: JSON.stringify({ apitype: 'list', ...params }),
+    }),
+
+  busDropdown: (params: { search?: string; page?: number } = {}) =>
+    apiFetch<{ data: { data: { data: Site[]; next_page_url: string | null } } }>(`/v2/sites?page=${params.page ?? 1}`, {
+      method: 'POST',
+      body: JSON.stringify({ search: params.search ?? '', apitype: 'dropdown', type: 'bus' }),
     }),
 
   get: (id: number) =>

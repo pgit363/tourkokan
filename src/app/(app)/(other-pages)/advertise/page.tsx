@@ -22,7 +22,7 @@ const AdvertisePage = () => {
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/v2/advertisingPackages`, {
+    fetch(`${API_BASE}/v2/advertisingPackages`, {
       headers: { Accept: 'application/json' },
     })
       .then((res) => res.json())
@@ -47,7 +47,7 @@ const AdvertisePage = () => {
         ...form,
         message: form.message || `Interested in advertising with TourKokan.`,
       }
-      const res = await fetch(`${API_BASE}/api/v2/addGuestQuery`, {
+      const res = await fetch(`${API_BASE}/v2/addGuestQuery`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),

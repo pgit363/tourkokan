@@ -25,7 +25,7 @@ const ContactPage = () => {
       formData.append('contactable_id', '1')
       formData.append('contactable_type', 'Site')
 
-      const res = await fetch(`${API_BASE}/api/v2/addGuestQuery`, {
+      const res = await fetch(`${API_BASE}/v2/addGuestQuery`, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: formData,

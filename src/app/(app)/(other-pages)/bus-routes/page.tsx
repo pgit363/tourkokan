@@ -1,6 +1,7 @@
 'use client'
 
 import { ApiError, Route, routesApi, sitesApi, Site } from '@/lib/api'
+import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import { useEffect, useState } from 'react'
 
 const RouteCard = ({ route }: { route: Route }) => (
@@ -78,6 +79,7 @@ export default function BusRoutesPage() {
   const [loading, setLoading] = useState(true)
   const [searching, setSearching] = useState(false)
   const [error, setError] = useState('')
+  const [showDownloadModal, setShowDownloadModal] = useState(false)
 
   // Load site dropdown (for source/dest search)
   useEffect(() => {
@@ -225,13 +227,14 @@ export default function BusRoutesPage() {
       {!loading && page < lastPage && (
         <div className="mt-10 flex justify-center">
           <button
-            onClick={() => fetchRoutes(page + 1)}
+            onClick={() => page + 1 >= 3 ? setShowDownloadModal(true) : fetchRoutes(page + 1)}
             className="rounded-xl border border-neutral-200 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
             Load more
           </button>
         </div>
       )}
+      <DownloadAppModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="See More Bus Routes" />
     </div>
   )
 }

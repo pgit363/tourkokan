@@ -37,6 +37,13 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Tourkokan FTP storage
+      {
+        protocol: 'https',
+        hostname: 'ftp.dev.tourkokan.com',
+        port: '',
+        pathname: '/**',
+      },
       // Tourkokan backend (S3 / server storage)
       {
         protocol: 'https',

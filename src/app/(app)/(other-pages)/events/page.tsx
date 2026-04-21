@@ -1,6 +1,7 @@
 'use client'
 
 import { ApiError, Event, eventsApi } from '@/lib/api'
+import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -97,6 +98,7 @@ export default function EventsPage() {
   const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showDownloadModal, setShowDownloadModal] = useState(false)
 
   const fetchEvents = async (reset = false) => {
     setLoading(true)
@@ -130,6 +132,7 @@ export default function EventsPage() {
 
   const handleLoadMore = async () => {
     const next = page + 1
+    if (next >= 3) { setShowDownloadModal(true); return }
     setPage(next)
     setLoading(true)
     try {
@@ -214,6 +217,7 @@ export default function EventsPage() {
           </button>
         </div>
       )}
+      <DownloadAppModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="See More Events" />
     </div>
   )
 }
