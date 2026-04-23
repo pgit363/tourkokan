@@ -20,10 +20,10 @@ const DownloadSection = () => {
           {/* Left */}
           <div className="max-w-lg text-center lg:text-left">
             <h2 className="text-4xl font-bold text-white sm:text-5xl">
-              Start exploring Konkan today
+              Start exploring Tourkokan today
             </h2>
             <p className="mt-5 text-lg text-orange-100">
-              Download TourKokan for free and unlock access to hundreds of destinations, live bus routes, local food
+              Download Tourkokan for free and unlock access to hundreds of destinations, live bus routes, local food
               guides, and unforgettable experiences.
             </p>
 

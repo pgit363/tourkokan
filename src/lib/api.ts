@@ -82,6 +82,12 @@ export async function apiFetch<T = unknown>(path: string, options: FetchOptions 
   if (!res.ok) {
     const err = data as { message?: string; errors?: Record<string, string[]> }
     const message = err?.message ?? `Request failed (${res.status})`
+    if (res.status === 401) {
+      removeToken()
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('auth:unauthenticated'))
+      }
+    }
     const error = new ApiError(message, res.status, err?.errors)
     throw error
   }
@@ -92,12 +98,14 @@ export async function apiFetch<T = unknown>(path: string, options: FetchOptions 
 export class ApiError extends Error {
   status: number
   errors?: Record<string, string[]>
+  isServerError: boolean
 
   constructor(message: string, status: number, errors?: Record<string, string[]>) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.errors = errors
+    this.isServerError = status >= 500 || message === 'Server Error'
   }
 }
 
@@ -146,9 +154,11 @@ export interface Site {
 export interface Category {
   id: number
   name: string
+  mr_name?: string
   code: string
   icon?: string
-  parent_id?: number
+  parent_id?: number | null
+  sub_categories?: Category[]
 }
 
 export interface Route {
@@ -321,7 +331,7 @@ export const authApi = {
 // ── Sites API ─────────────────────────────────────────────────────────────────
 
 export const sitesApi = {
-  list: (params: { search?: string; category?: string; per_page?: number; page?: number } = {}) =>
+  list: (params: { search?: string; category?: string; parent_id?: number; per_page?: number; page?: number; global?: number } = {}) =>
     apiFetch<{ data: Pagination<Site> }>('/v2/sites', {
       method: 'POST',
       body: JSON.stringify({ apitype: 'list', ...params }),

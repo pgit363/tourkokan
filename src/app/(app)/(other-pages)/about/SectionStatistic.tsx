@@ -6,25 +6,25 @@ const facts = [
     id: '1',
     heading: '720 km',
     subHeading:
-      'Maharashtra\'s Konkan coastline — one of India\'s longest and most scenic stretches, from Dahanu to Goa. (Source: Maharashtra Tourism)',
+      'Maharashtra\'s Tourkokan coastline — one of India\'s longest and most scenic stretches, from Dahanu to Goa. (Source: Maharashtra Tourism)',
   },
   {
     id: '2',
     heading: '₹12,000 Cr+',
     subHeading:
-      'Estimated annual revenue from Konkan tourism, driven by beaches, forts, and Alphonso mango agri-tourism. (Source: MTDC 2023)',
+      'Estimated annual revenue from Tourkokan tourism, driven by beaches, forts, and Alphonso mango agri-tourism. (Source: MTDC 2023)',
   },
   {
     id: '3',
     heading: '5 Million+',
     subHeading:
-      'Tourists visit the Konkan coast every year, with Malvan, Alibaug, and Ganpatipule among the top destinations. (Source: Maharashtra Tourism)',
+      'Tourists visit the Tourkokan coast every year, with Malvan, Alibaug, and Ganpatipule among the top destinations. (Source: Maharashtra Tourism)',
   },
   {
     id: '4',
     heading: '200+ Beaches',
     subHeading:
-      'Pristine beaches along the Konkan coast — from Tarkarli\'s turquoise waters to Harihareshwar\'s sacred shores.',
+      'Pristine beaches along the Tourkokan coast — from Tarkarli\'s turquoise waters to Harihareshwar\'s sacred shores.',
   },
   {
     id: '5',
@@ -47,8 +47,8 @@ interface SectionStatisticProps {
 const SectionStatistic: FC<SectionStatisticProps> = ({ className = '' }) => {
   return (
     <div className={`relative ${className}`}>
-      <Heading subheading="Real numbers behind Konkan's growing tourism story">
-        🌊 Konkan by the Numbers
+      <Heading subheading="Real numbers behind Tourkokan's growing tourism story">
+        🌊 Tourkokan by the Numbers
       </Heading>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:gap-8">
         {facts.map((item) => (

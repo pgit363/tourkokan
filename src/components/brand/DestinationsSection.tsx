@@ -59,10 +59,10 @@ const DestinationsSection = () => {
               Top picks
             </span>
             <h2 className="mt-4 text-4xl font-bold text-neutral-900 dark:text-white">
-              Iconic Konkan destinations
+              Iconic Tourkokan destinations
             </h2>
             <p className="mt-3 max-w-lg text-neutral-500 dark:text-neutral-400">
-              From ancient forts to pristine beaches — explore the best of what Konkan has to offer.
+              From ancient forts to pristine beaches — explore the best of what Tourkokan has to offer.
             </p>
           </div>
           <a

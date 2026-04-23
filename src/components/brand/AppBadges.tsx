@@ -3,7 +3,7 @@ import Link from 'next/link'
 import googlePlayBadge from '@/images/googleplay.png'
 import appStoreBadge from '@/images/appstore.png'
 
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.tourkokan'
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.Tourkokan'
 
 interface PlayStoreBadgeProps {
   width?: number

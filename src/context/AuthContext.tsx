@@ -23,9 +23,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = getStoredUser()
     if (stored && getToken()) {
-      setUser(stored)
+      // normalize isGuest to boolean — API may have stored it as string "true"
+      setUser({ ...stored, isGuest: stored.isGuest === true || (stored.isGuest as unknown) === 'true' })
     }
     setIsLoading(false)
+
+    const handleUnauthenticated = () => setUser(null)
+    window.addEventListener('auth:unauthenticated', handleUnauthenticated)
+    return () => window.removeEventListener('auth:unauthenticated', handleUnauthenticated)
   }, [])
 
   const login = async (email: string, password: string) => {
@@ -38,9 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginAsGuest = async () => {
     const guestName = `Guest_${Math.random().toString(36).slice(2, 10).toUpperCase()}`
     const res = await authApi.guestRegister(guestName)
+    const guestUser = { ...res.user, isGuest: true }
     setToken(res.access_token)
-    setStoredUser(res.user)
-    setUser(res.user)
+    setStoredUser(guestUser)
+    setUser(guestUser)
   }
 
   const logout = async () => {
@@ -49,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore errors on logout
     } finally {
-      removeToken()
+      if (typeof window !== 'undefined') localStorage.clear()
       setUser(null)
     }
   }

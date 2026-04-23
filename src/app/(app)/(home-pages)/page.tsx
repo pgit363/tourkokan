@@ -6,10 +6,10 @@ import TestimonialsSection from '@/components/brand/TestimonialsSection'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'TourKokan — Discover the Magic of Konkan',
+  title: 'Tourkokan — Discover the Magic of Tourkokan',
   description:
-    "Your ultimate travel companion for exploring beaches, forts, culture, and hidden gems of Maharashtra's Konkan coast. Available on Google Play.",
-  keywords: ['Konkan', 'Maharashtra', 'Tourism', 'Travel App', 'TourKokan', 'Malvan', 'Ratnagiri', 'Sindhudurg', 'Ganpatipule', 'Tarkarli'],
+    "Your ultimate travel companion for exploring beaches, forts, culture, and hidden gems of Maharashtra's Tourkokan coast. Available on Google Play.",
+  keywords: ['Tourkokan', 'Maharashtra', 'Tourism', 'Travel App', 'Tourkokan', 'Malvan', 'Ratnagiri', 'Sindhudurg', 'Ganpatipule', 'Tarkarli'],
 }
 
 export default function Page() {

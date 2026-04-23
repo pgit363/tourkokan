@@ -1,7 +1,7 @@
 const steps = [
   {
     step: '01',
-    title: 'Download TourKokan',
+    title: 'Download Tourkokan',
     description: 'Available on Google Play. iOS coming soon. Install the app and create your free account in seconds.',
     icon: (
       <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -12,7 +12,7 @@ const steps = [
   {
     step: '02',
     title: 'Explore Destinations',
-    description: "Browse 100+ curated Konkan destinations — beaches, forts, temples, waterfalls, and nature trails.",
+    description: "Browse 100+ curated Tourkokan destinations — beaches, forts, temples, waterfalls, and nature trails.",
     icon: (
       <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -31,7 +31,7 @@ const steps = [
   },
   {
     step: '04',
-    title: 'Experience Konkan',
+    title: 'Experience Tourkokan',
     description: 'Go on your adventure and share your experiences. Rate places, write reviews, help the community.',
     icon: (
       <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@ const HowItWorks = () => {
           </span>
           <h2 className="mt-4 text-4xl font-bold text-neutral-900 dark:text-white">How it works</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-neutral-500 dark:text-neutral-400">
-            Get started in minutes and discover the beauty of Konkan like a local.
+            Get started in minutes and discover the beauty of Tourkokan like a local.
           </p>
         </div>
 

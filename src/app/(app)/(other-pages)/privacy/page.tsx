@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Learn how TourKokan collects, uses, and protects your personal information.',
+  description: 'Learn how Tourkokan collects, uses, and protects your personal information.',
 }
 
 const sections = [
@@ -38,7 +38,7 @@ const sections = [
     id: '03',
     title: 'Data Security',
     icon: '🔒',
-    content: `We implement industry-standard security measures including AES-256 encryption at rest, TLS/HTTPS transmission, and strict access controls. Despite these measures, no electronic system is 100% secure. We encourage you to use a strong password and notify us immediately if you suspect unauthorised access to your account at support@tourkokan.com.`,
+    content: `We implement industry-standard security measures including AES-256 encryption at rest, TLS/HTTPS transmission, and strict access controls. Despite these measures, no electronic system is 100% secure. We encourage you to use a strong password and notify us immediately if you suspect unauthorised access to your account at support@Tourkokan.com.`,
   },
   {
     id: '04',
@@ -74,7 +74,7 @@ const sections = [
     id: '08',
     title: 'Children\'s Privacy',
     icon: '👶',
-    content: `TourKokan is not directed to children under 13. We do not knowingly collect personal information from children under 13. If you believe we have inadvertently collected such information, contact us and we will delete it promptly.`,
+    content: `Tourkokan is not directed to children under 13. We do not knowingly collect personal information from children under 13. If you believe we have inadvertently collected such information, contact us and we will delete it promptly.`,
   },
   {
     id: '09',
@@ -99,18 +99,18 @@ const PrivacyPage = () => {
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-neutral-900 sm:text-5xl dark:text-white">Privacy Policy</h1>
           <p className="mt-3 text-neutral-500 dark:text-neutral-400">
-            Last updated: April 2025 &nbsp;·&nbsp; Applies to the TourKokan app and website
+            Last updated: April 2025 &nbsp;·&nbsp; Applies to the Tourkokan app and website
           </p>
         </div>
 
         {/* Intro card */}
         <div className="mb-10 rounded-2xl border border-primary-100 bg-primary-50 p-6 dark:border-primary-900/40 dark:bg-primary-900/20">
           <p className="text-sm leading-relaxed text-primary-800 dark:text-primary-300">
-            TourKokan is committed to protecting your privacy. This policy explains exactly what data we collect,
+            Tourkokan is committed to protecting your privacy. This policy explains exactly what data we collect,
             why we collect it, and how you can control it. We do not sell your personal information — ever.
             Questions? Email{' '}
-            <a href="mailto:support@tourkokan.com" className="font-semibold underline">
-              support@tourkokan.com
+            <a href="mailto:support@Tourkokan.com" className="font-semibold underline">
+              support@Tourkokan.com
             </a>
           </p>
         </div>

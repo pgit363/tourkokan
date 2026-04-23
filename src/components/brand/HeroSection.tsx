@@ -34,13 +34,13 @@ const HeroSection = () => {
             Discover the
             <br />
             <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-              Magic of Konkan
+              Magic of Tourkokan
             </span>
           </h1>
 
           <p className="mt-6 max-w-xl text-lg text-neutral-400 sm:text-xl">
             Your ultimate travel companion for exploring the pristine beaches, ancient forts, lush forests, and vibrant
-            culture of Maharashtra&apos;s Konkan coast.
+            culture of Maharashtra&apos;s Tourkokan coast.
           </p>
 
           {/* Download Buttons */}
@@ -76,7 +76,7 @@ const HeroSection = () => {
             <div className="relative z-10 w-[285px] overflow-hidden rounded-[3rem] border-4 border-neutral-700 bg-black shadow-2xl sm:w-[300px]" style={{ aspectRatio: '1080/2340' }}>
               <Image
                 src="/app-screenshot.png"
-                alt="TourKokan App"
+                alt="Tourkokan App"
                 fill
                 className="object-fill"
                 sizes="300px"
@@ -93,7 +93,7 @@ const HeroSection = () => {
               </div>
               <div>
                 <div className="text-xs font-semibold text-white">100+ Destinations</div>
-                <div className="text-xs text-green-100">Across Konkan coast</div>
+                <div className="text-xs text-green-100">Across Tourkokan coast</div>
               </div>
             </div>
 

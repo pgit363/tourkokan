@@ -1,22 +1,16 @@
 'use client'
 
-import { ApiError, commentsApi, Comment, ratingsApi, sitesApi, Site } from '@/lib/api'
+import { ApiError, commentsApi, Comment, ftpUrl, ratingsApi, sitesApi, Site } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://probytesolution.in'
-
-function mediaUrl(path?: string) {
-  if (!path) return null
-  if (path.startsWith('http')) return path
-  return `${BACKEND_URL}/storage/${path}`
-}
-
 export default function DestinationDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, user } = useAuth()
+  const isGuest = user?.isGuest === true || (user?.isGuest as unknown) === 'true'
 
   const [site, setSite] = useState<Site | null>(null)
   const [comments, setComments] = useState<Comment[]>([])
@@ -26,6 +20,7 @@ export default function DestinationDetailPage() {
   const [loading, setLoading] = useState(true)
   const [commentLoading, setCommentLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showDownloadModal, setShowDownloadModal] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -33,7 +28,10 @@ export default function DestinationDetailPage() {
     sitesApi
       .get(Number(id))
       .then((res) => setSite(res.data))
-      .catch((err) => setError(err instanceof ApiError ? err.message : 'Failed to load destination.'))
+      .catch((err) => {
+        if (!(err instanceof ApiError && err.isServerError))
+          setError(err instanceof ApiError ? err.message : 'Failed to load destination.')
+      })
       .finally(() => setLoading(false))
 
     commentsApi
@@ -44,6 +42,7 @@ export default function DestinationDetailPage() {
 
   const handleRating = async (value: number) => {
     if (!isLoggedIn) return
+    if (isGuest) { setShowDownloadModal(true); return }
     setRating(value)
     try {
       await ratingsApi.addUpdate('Site', Number(id), value)
@@ -53,6 +52,7 @@ export default function DestinationDetailPage() {
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newComment.trim() || !isLoggedIn) return
+    if (isGuest) { setShowDownloadModal(true); return }
     setCommentLoading(true)
     try {
       const res = await commentsApi.add('Site', Number(id), newComment)
@@ -81,7 +81,7 @@ export default function DestinationDetailPage() {
     )
   }
 
-  const imgUrl = mediaUrl(site.image)
+  const imgUrl = ftpUrl(site.image)
 
   return (
     <div className="container py-12 lg:py-16">
@@ -102,8 +102,8 @@ export default function DestinationDetailPage() {
               <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{site.name}</h1>
               {site.categories && site.categories.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {site.categories.map((c) => (
-                    <span key={c.id} className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
+                  {site.categories.map((c, i) => (
+                    <span key={`${c.id}-${i}`} className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
                       {c.name}
                     </span>
                   ))}
@@ -128,9 +128,9 @@ export default function DestinationDetailPage() {
               <h2 className="mb-4 text-xl font-semibold text-neutral-900 dark:text-white">Photos</h2>
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {(site as any).gallery.slice(0, 8).map((g: any, i: number) => (
-                  <div key={i} className="aspect-square overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-700">
-                    {mediaUrl(g.path) && (
-                      <img src={mediaUrl(g.path)!} alt={g.title ?? ''} className="h-full w-full object-cover" />
+                  <div key={g.id ?? i} className="aspect-square overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-700">
+                    {ftpUrl(g.path) && (
+                      <img src={ftpUrl(g.path)!} alt={g.title ?? ''} className="h-full w-full object-cover" />
                     )}
                   </div>
                 ))}
@@ -190,8 +190,8 @@ export default function DestinationDetailPage() {
             )}
 
             <div className="space-y-4">
-              {comments.map((c) => (
-                <div key={c.id} className="rounded-2xl bg-neutral-50 p-4 dark:bg-neutral-800">
+              {comments.map((c, i) => (
+                <div key={c.id ?? i} className="rounded-2xl bg-neutral-50 p-4 dark:bg-neutral-800">
                   <div className="flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700 dark:bg-primary-900/30">
                       {c.users?.name?.charAt(0).toUpperCase() ?? '?'}
@@ -246,6 +246,7 @@ export default function DestinationDetailPage() {
           </Link>
         </div>
       </div>
+      <DownloadAppModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="Download the App" />
     </div>
   )
 }

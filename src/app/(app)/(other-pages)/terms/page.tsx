@@ -3,29 +3,29 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
-  description: 'Terms and conditions for using TourKokan — your Konkan travel guide app.',
+  description: 'Terms and conditions for using Tourkokan — your Tourkokan travel guide app.',
 }
 
 const sections = [
   {
     id: '01',
     title: 'Acceptance of Terms',
-    content: `By downloading, installing, or using the TourKokan application or visiting tourkokan.com, you agree to be bound by these Terms. If you do not agree, please do not use our services.`,
+    content: `By downloading, installing, or using the Tourkokan application or visiting Tourkokan.com, you agree to be bound by these Terms. If you do not agree, please do not use our services.`,
   },
   {
     id: '02',
     title: 'Description of Service',
-    content: `TourKokan provides a travel-guide platform for the Konkan coast of Maharashtra, India. Features include destination guides, live bus routes, local food recommendations, accommodation listings, and user-submitted reviews. The App is available on Android; iOS is coming soon.`,
+    content: `Tourkokan provides a travel-guide platform for the Tourkokan coast of Maharashtra, India. Features include destination guides, live bus routes, local food recommendations, accommodation listings, and user-submitted reviews. The App is available on Android; iOS is coming soon.`,
   },
   {
     id: '03',
     title: 'User Accounts',
-    content: `You may use parts of the App as a guest. Creating an account requires a valid name and either an email address or mobile number. You are responsible for maintaining the confidentiality of your credentials. Notify us immediately at support@tourkokan.com if you suspect unauthorised access.`,
+    content: `You may use parts of the App as a guest. Creating an account requires a valid name and either an email address or mobile number. You are responsible for maintaining the confidentiality of your credentials. Notify us immediately at support@Tourkokan.com if you suspect unauthorised access.`,
   },
   {
     id: '04',
     title: 'User-Generated Content',
-    content: `By submitting reviews, photos, or other content, you grant TourKokan a non-exclusive, royalty-free, worldwide licence to use, reproduce, and display that content in connection with our services. You represent that you have the rights to submit such content and that it does not violate any third-party rights or applicable law.`,
+    content: `By submitting reviews, photos, or other content, you grant Tourkokan a non-exclusive, royalty-free, worldwide licence to use, reproduce, and display that content in connection with our services. You represent that you have the rights to submit such content and that it does not violate any third-party rights or applicable law.`,
   },
   {
     id: '05',
@@ -35,22 +35,22 @@ const sections = [
   {
     id: '06',
     title: 'Intellectual Property',
-    content: `All content, branding, and technology within the App and Website are owned by or licensed to TourKokan. The TourKokan name, logo, and trade dress are trademarks of TourKokan. Nothing herein grants you any right to use our intellectual property without prior written permission.`,
+    content: `All content, branding, and technology within the App and Website are owned by or licensed to Tourkokan. The Tourkokan name, logo, and trade dress are trademarks of Tourkokan. Nothing herein grants you any right to use our intellectual property without prior written permission.`,
   },
   {
     id: '07',
     title: 'Disclaimers',
-    content: `The App is provided "as is" without warranties of any kind. Travel information, bus schedules, and listings are sourced from third parties and may not always be accurate. Always verify critical information before travel. TourKokan is not liable for any loss, injury, or inconvenience arising from reliance on App information.`,
+    content: `The App is provided "as is" without warranties of any kind. Travel information, bus schedules, and listings are sourced from third parties and may not always be accurate. Always verify critical information before travel. Tourkokan is not liable for any loss, injury, or inconvenience arising from reliance on App information.`,
   },
   {
     id: '08',
     title: 'Limitation of Liability',
-    content: `To the maximum extent permitted by law, TourKokan shall not be liable for any indirect, incidental, special, or consequential damages. Our total liability shall not exceed the amount you paid (if any) for the App in the three months preceding the claim.`,
+    content: `To the maximum extent permitted by law, Tourkokan shall not be liable for any indirect, incidental, special, or consequential damages. Our total liability shall not exceed the amount you paid (if any) for the App in the three months preceding the claim.`,
   },
   {
     id: '09',
     title: 'Account Deletion',
-    content: `You may delete your account at any time from the app settings or by visiting tourkokan.com/delete-account. Deletion permanently removes all personal data associated with your account within 30 days, except where we are required to retain it by law.`,
+    content: `You may delete your account at any time from the app settings or by visiting Tourkokan.com/delete-account. Deletion permanently removes all personal data associated with your account within 30 days, except where we are required to retain it by law.`,
   },
   {
     id: '10',
@@ -75,17 +75,17 @@ const TermsPage = () => {
             Terms &amp; Conditions
           </h1>
           <p className="mt-3 text-neutral-500 dark:text-neutral-400">
-            Last updated: April 2025 &nbsp;·&nbsp; Effective for all TourKokan users
+            Last updated: April 2025 &nbsp;·&nbsp; Effective for all Tourkokan users
           </p>
         </div>
 
         {/* Intro card */}
         <div className="mb-10 rounded-2xl border border-primary-100 bg-primary-50 p-6 dark:border-primary-900/40 dark:bg-primary-900/20">
           <p className="text-sm leading-relaxed text-primary-800 dark:text-primary-300">
-            These Terms &amp; Conditions govern your use of the TourKokan app and website. By using our services
+            These Terms &amp; Conditions govern your use of the Tourkokan app and website. By using our services
             you agree to these terms. Questions? Email us at{' '}
-            <a href="mailto:support@tourkokan.com" className="font-semibold underline">
-              support@tourkokan.com
+            <a href="mailto:support@Tourkokan.com" className="font-semibold underline">
+              support@Tourkokan.com
             </a>
           </p>
         </div>

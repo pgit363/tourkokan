@@ -7,7 +7,7 @@ const features = [
       </svg>
     ),
     title: 'Explore Places',
-    description: 'Discover beaches, forts, temples, waterfalls, and hidden gems across the Konkan coast with curated guides.',
+    description: 'Discover beaches, forts, temples, waterfalls, and hidden gems across the Tourkokan coast with curated guides.',
     color: 'bg-orange-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400',
   },
   {
@@ -47,7 +47,7 @@ const features = [
       </svg>
     ),
     title: 'Events & Festivals',
-    description: 'Stay updated on local festivals, cultural events, and seasonal experiences in Konkan.',
+    description: 'Stay updated on local festivals, cultural events, and seasonal experiences in Tourkokan.',
     color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
   },
   {
@@ -57,7 +57,7 @@ const features = [
       </svg>
     ),
     title: 'Experiences',
-    description: 'Book scuba diving, dolphin watching, mangrove kayaking, and authentic Konkan experiences.',
+    description: 'Book scuba diving, dolphin watching, mangrove kayaking, and authentic Tourkokan experiences.',
     color: 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400',
   },
 ]
@@ -71,10 +71,10 @@ const FeaturesSection = () => {
             Everything you need
           </span>
           <h2 className="mt-4 text-4xl font-bold text-neutral-900 dark:text-white">
-            Your complete Konkan travel guide
+            Your complete Tourkokan travel guide
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-500 dark:text-neutral-400">
-            From planning to exploring — TourKokan has every feature to make your Konkan trip unforgettable.
+            From planning to exploring — Tourkokan has every feature to make your Tourkokan trip unforgettable.
           </p>
         </div>
 

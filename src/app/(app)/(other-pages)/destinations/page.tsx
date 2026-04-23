@@ -3,7 +3,99 @@
 import { ApiError, sitesApi, categoriesApi, ftpUrl, Site, Category } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+// ── LimitedSelect ──────────────────────────────────────────────────────────────
+// Shows first `limit` options freely; remaining options are blurred and
+// clicking them fires onLimitReached (show download modal).
+
+type SelectOption = { value: string; label: string }
+
+function LimitedSelect({
+  options,
+  value,
+  onChange,
+  placeholder,
+  disabled = false,
+  limit = 3,
+  onLimitReached,
+}: {
+  options: SelectOption[]
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+  disabled?: boolean
+  limit?: number
+  onLimitReached: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const selectedLabel = options.find((o) => o.value === value)?.label
+
+  return (
+    <div ref={ref} className="relative min-w-[180px]">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 rounded-xl border-2 border-primary-400 bg-white px-4 py-2.5 text-sm transition disabled:cursor-not-allowed disabled:opacity-40 dark:border-primary-600 dark:bg-neutral-800 dark:text-white"
+      >
+        <span className={selectedLabel ? 'text-neutral-900 dark:text-white' : 'text-neutral-500'}>
+          {selectedLabel ?? placeholder}
+        </span>
+        <svg className="h-4 w-4 shrink-0 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+          {/* "All" reset option — always free */}
+          <button
+            type="button"
+            onMouseDown={() => { onChange(''); setOpen(false) }}
+            className="w-full px-4 py-2.5 text-left text-sm text-neutral-500 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-neutral-700"
+          >
+            {placeholder}
+          </button>
+          {options.map((opt, i) =>
+            i < limit ? (
+              <button
+                key={opt.value}
+                type="button"
+                onMouseDown={() => { onChange(opt.value); setOpen(false) }}
+                className="w-full px-4 py-2.5 text-left text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-200 dark:hover:bg-neutral-700"
+              >
+                {opt.label}
+              </button>
+            ) : (
+              <div key={opt.value} className="relative">
+                <div className="pointer-events-none select-none px-4 py-2.5 text-sm text-neutral-700 blur-sm dark:text-neutral-200">
+                  {opt.label}
+                </div>
+                <div
+                  className="absolute inset-0 cursor-pointer"
+                  onMouseDown={() => { onLimitReached(); setOpen(false) }}
+                />
+              </div>
+            )
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── DestinationCard ────────────────────────────────────────────────────────────
 
 const DestinationCard = ({ site }: { site: Site }) => {
   const imgUrl = ftpUrl(site.image)
@@ -59,16 +151,25 @@ const DestinationCard = ({ site }: { site: Site }) => {
   )
 }
 
+// ── Page ───────────────────────────────────────────────────────────────────────
+
 export default function DestinationsPage() {
   const [sites, setSites] = useState<Site[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
+  const [selectedParent, setSelectedParent] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showDownloadModal, setShowDownloadModal] = useState(false)
+
+  const subCategories =
+    categories.find((c) => String(c.id) === selectedParent)?.sub_categories ?? []
+
+  const parentOptions: SelectOption[] = categories.map((c) => ({ value: String(c.id), label: c.name }))
+  const subOptions: SelectOption[] = subCategories.map((s) => ({ value: s.name, label: s.name }))
 
   const fetchSites = async (reset = false) => {
     setLoading(true)
@@ -80,13 +181,16 @@ export default function DestinationsPage() {
         category: selectedCategory || undefined,
         per_page: 12,
         page: currentPage,
+        global: 1,
       })
       const pagination = res.data
       setSites(reset ? pagination.data : (prev) => [...prev, ...pagination.data])
       setLastPage(pagination.last_page)
       if (reset) setPage(1)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to load destinations.')
+      if (!(err instanceof ApiError && err.isServerError)) {
+        setError(err instanceof ApiError ? err.message : 'Failed to load destinations.')
+      }
     } finally {
       setLoading(false)
     }
@@ -101,6 +205,11 @@ export default function DestinationsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, selectedCategory])
 
+  const handleParentChange = (parentId: string) => {
+    setSelectedParent(parentId)
+    setSelectedCategory('')
+  }
+
   const handleLoadMore = async () => {
     const next = page + 1
     if (next >= 3) { setShowDownloadModal(true); return }
@@ -112,6 +221,7 @@ export default function DestinationsPage() {
         category: selectedCategory || undefined,
         per_page: 12,
         page: next,
+        global: 1,
       })
       setSites((prev) => [...prev, ...res.data.data])
       setLastPage(res.data.last_page)
@@ -129,37 +239,36 @@ export default function DestinationsPage() {
       </div>
 
       {/* Filters */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center">
         <input
           type="search"
           placeholder="Search destinations…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length >= 3) { setShowDownloadModal(true); return }
+            setSearch(e.target.value)
+          }}
           className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white sm:max-w-xs"
         />
-        {categories.length > 0 && (
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-          >
-            <option value="">All categories</option>
-            {categories
-              .filter((c) => !c.parent_id)
-              .map((parent) => {
-                const children = categories.filter((c) => c.parent_id === parent.id)
-                return children.length > 0 ? (
-                  <optgroup key={parent.id} label={parent.name}>
-                    {children.map((sub) => (
-                      <option key={sub.id} value={sub.name}>{sub.name}</option>
-                    ))}
-                  </optgroup>
-                ) : (
-                  <option key={parent.id} value={parent.name}>{parent.name}</option>
-                )
-              })}
-          </select>
-        )}
+
+        <LimitedSelect
+          options={parentOptions}
+          value={selectedParent}
+          onChange={handleParentChange}
+          placeholder="All categories"
+          limit={3}
+          onLimitReached={() => setShowDownloadModal(true)}
+        />
+
+        <LimitedSelect
+          options={subOptions}
+          value={selectedCategory}
+          onChange={setSelectedCategory}
+          placeholder="Sub-category *"
+          disabled={!selectedParent || subOptions.length === 0}
+          limit={3}
+          onLimitReached={() => setShowDownloadModal(true)}
+        />
       </div>
 
       {error && (
@@ -195,7 +304,7 @@ export default function DestinationsPage() {
           </button>
         </div>
       )}
-      <DownloadAppModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="See More Destinations" />
+      <DownloadAppModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="Download App to See More" />
     </div>
   )
 }

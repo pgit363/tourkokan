@@ -30,6 +30,7 @@ const BrandHeader = () => {
     await logout()
     setUserMenuOpen(false)
     setMenuOpen(false)
+    router.push('/')
   }
 
   const handleProtectedClick = (href: string) => (e: React.MouseEvent) => {
@@ -91,9 +92,13 @@ const BrandHeader = () => {
                 {userMenuOpen && (
                   <div className="absolute right-0 top-11 w-48 rounded-2xl border border-neutral-100 bg-white py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
                     <p className="truncate px-4 py-2 text-sm font-medium text-neutral-900 dark:text-white">{user?.name}</p>
-                    <div className="my-1 border-t border-neutral-100 dark:border-neutral-700" />
-                    <Link href="/account" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">My Account</Link>
-                    <Link href="/account-savelists" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">Saved Places</Link>
+                    {!user?.isGuest && (
+                      <>
+                        <div className="my-1 border-t border-neutral-100 dark:border-neutral-700" />
+                        <Link href="/account" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">My Account</Link>
+                        <Link href="/account-savelists" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">Saved Places</Link>
+                      </>
+                    )}
                     <div className="my-1 border-t border-neutral-100 dark:border-neutral-700" />
                     <button onClick={handleLogout} className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Sign out</button>
                   </div>
@@ -161,8 +166,12 @@ const BrandHeader = () => {
               {isLoggedIn ? (
                 <div className="space-y-1">
                   <p className="px-3 py-1 text-sm font-medium text-neutral-900 dark:text-white">{user?.name}</p>
-                  <Link href="/account" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">My Account</Link>
-                  <Link href="/account-savelists" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">Saved Places</Link>
+                  {!user?.isGuest && (
+                    <>
+                      <Link href="/account" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">My Account</Link>
+                      <Link href="/account-savelists" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">Saved Places</Link>
+                    </>
+                  )}
                   <button onClick={handleLogout} className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Sign out</button>
                 </div>
               ) : (

@@ -6,7 +6,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* TourKokan — Konkan Sunset Orange */
+  /* Tourkokan — Tourkokan Sunset Orange */
   --color-primary-50: rgb(255, 247, 237);
   --color-primary-100: rgb(255, 237, 213);
   --color-primary-200: rgb(254, 215, 170);
@@ -18,7 +18,7 @@
   --color-primary-800: rgb(154, 52, 18);
   --color-primary-900: rgb(124, 45, 18);
 
-  /* TourKokan — Arabian Sea Teal */
+  /* Tourkokan — Arabian Sea Teal */
   --color-secondary-50: rgb(240, 253, 250);
   --color-secondary-100: rgb(204, 251, 241);
   --color-secondary-200: rgb(153, 246, 228);

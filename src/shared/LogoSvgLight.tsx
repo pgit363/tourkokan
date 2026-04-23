@@ -9,7 +9,7 @@ const LogoSvgLight = () => {
       <circle cx="15" cy="12" r="4.5" fill="white" />
       <circle cx="15" cy="12" r="2" fill="#FB923C" />
 
-      {/* TourKokan wordmark — white for dark mode */}
+      {/* Tourkokan wordmark — white for dark mode */}
       <text x="33" y="14" fontFamily="'Poppins', sans-serif" fontSize="13" fontWeight="700" fill="white">Tour</text>
       <text x="33" y="28" fontFamily="'Poppins', sans-serif" fontSize="13" fontWeight="600" fill="#FB923C">Kokan</text>
     </svg>

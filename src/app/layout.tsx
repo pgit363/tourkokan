@@ -28,15 +28,15 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    template: '%s — TourKokan',
-    default: 'TourKokan — Discover the Magic of Konkan',
+    template: '%s — Tourkokan',
+    default: 'Tourkokan — Discover the Magic of Tourkokan',
   },
   description:
-    "Your ultimate travel companion for exploring the pristine beaches, ancient forts, lush forests, and vibrant culture of Maharashtra's Konkan coast. Available on Google Play.",
+    "Your ultimate travel companion for exploring the pristine beaches, ancient forts, lush forests, and vibrant culture of Maharashtra's Tourkokan coast. Available on Google Play.",
   keywords: [
-    'TourKokan',
-    'Konkan Tourism',
-    'Konkan Travel App',
+    'Tourkokan',
+    'Tourkokan Tourism',
+    'Tourkokan Travel App',
     'Maharashtra Travel',
     'Malvan',
     'Ratnagiri',
@@ -45,16 +45,16 @@ export const metadata: Metadata = {
     'Tarkarli',
     'Devgad',
     'Alibag',
-    'Konkan beaches',
-    'Konkan forts',
-    'Konkan food',
-    'bus routes Konkan',
+    'Tourkokan beaches',
+    'Tourkokan forts',
+    'Tourkokan food',
+    'bus routes Tourkokan',
   ],
-  authors: [{ name: 'TourKokan', url: SITE_URL }],
-  creator: 'TourKokan',
-  publisher: 'TourKokan',
+  authors: [{ name: 'Tourkokan', url: SITE_URL }],
+  creator: 'Tourkokan',
+  publisher: 'Tourkokan',
   category: 'travel',
-  applicationName: 'TourKokan',
+  applicationName: 'Tourkokan',
   referrer: 'origin-when-cross-origin',
   robots: {
     index: true,
@@ -71,26 +71,26 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: SITE_URL,
-    siteName: 'TourKokan',
-    title: 'TourKokan — Discover the Magic of Konkan',
+    siteName: 'Tourkokan',
+    title: 'Tourkokan — Discover the Magic of Tourkokan',
     description:
-      "Explore pristine beaches, ancient forts, and the vibrant culture of Maharashtra's Konkan coast with TourKokan.",
+      "Explore pristine beaches, ancient forts, and the vibrant culture of Maharashtra's Tourkokan coast with Tourkokan.",
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'TourKokan — Discover the Magic of Konkan',
+        alt: 'Tourkokan — Discover the Magic of Tourkokan',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TourKokan — Discover the Magic of Konkan',
+    title: 'Tourkokan — Discover the Magic of Tourkokan',
     description:
-      "Explore beaches, forts, and hidden gems of Maharashtra's Konkan coast.",
+      "Explore beaches, forts, and hidden gems of Maharashtra's Tourkokan coast.",
     images: ['/og-image.png'],
-    creator: '@tourkokan',
+    creator: '@Tourkokan',
   },
   alternates: {
     canonical: SITE_URL,
@@ -105,10 +105,10 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'MobileApplication',
-  name: 'TourKokan',
+  name: 'Tourkokan',
   url: SITE_URL,
   description:
-    "Your ultimate travel companion for exploring the pristine beaches, ancient forts, and vibrant culture of Maharashtra's Konkan coast.",
+    "Your ultimate travel companion for exploring the pristine beaches, ancient forts, and vibrant culture of Maharashtra's Tourkokan coast.",
   applicationCategory: 'TravelApplication',
   operatingSystem: 'Android',
   offers: {
@@ -124,13 +124,13 @@ const jsonLd = {
   },
   author: {
     '@type': 'Organization',
-    name: 'TourKokan',
+    name: 'Tourkokan',
     url: SITE_URL,
-    email: 'support@tourkokan.com',
+    email: 'support@Tourkokan.com',
     sameAs: [
-      'https://www.facebook.com/tourkokan',
-      'https://www.instagram.com/tourkokan',
-      'https://play.google.com/store/apps/details?id=com.tourkokan',
+      'https://www.facebook.com/Tourkokan',
+      'https://www.instagram.com/Tourkokan',
+      'https://play.google.com/store/apps/details?id=com.Tourkokan',
     ],
   },
 }

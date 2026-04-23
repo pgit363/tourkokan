@@ -107,11 +107,12 @@ export default function EventsPage() {
     try {
       const res = await eventsApi.list(params)
       const pagination = res.data
-      setEvents(reset ? pagination.data : (prev) => [...prev, ...pagination.data])
-      setLastPage(pagination.last_page)
+      setEvents(reset ? (pagination.data ?? []) : (prev) => [...prev, ...(pagination.data ?? [])])
+      setLastPage(pagination.last_page ?? 1)
       if (reset) setPage(1)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to load events.')
+      if (!(err instanceof ApiError && err.isServerError))
+        setError(err instanceof ApiError ? err.message : 'Failed to load events.')
     } finally {
       setLoading(false)
     }
@@ -136,8 +137,8 @@ export default function EventsPage() {
       if (filter === 'free') params.is_free = true
       if (filter === 'featured') params.is_featured = true
       const res = await eventsApi.list(params)
-      setEvents((prev) => [...prev, ...res.data.data])
-      setLastPage(res.data.last_page)
+      setEvents((prev) => [...prev, ...(res.data.data ?? [])])
+      setLastPage(res.data.last_page ?? 1)
     } catch {
     } finally {
       setLoading(false)

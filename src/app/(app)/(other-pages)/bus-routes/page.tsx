@@ -73,10 +73,12 @@ function BusDropdown({
   label,
   value,
   onChange,
+  onDownloadPrompt,
 }: {
   label: string
   value: Site | null
   onChange: (s: Site | null) => void
+  onDownloadPrompt: () => void
 }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -97,7 +99,7 @@ function BusDropdown({
     setLoadingOpts(true)
     sitesApi
       .busDropdown({ search: query })
-      .then((res) => setOptions(res.data.data.data))
+      .then((res) => setOptions(res.data?.data?.data ?? []))
       .catch(() => setOptions([]))
       .finally(() => setLoadingOpts(false))
   }, [open, query])
@@ -111,7 +113,8 @@ function BusDropdown({
         type="text"
         value={open ? query : displayValue}
         placeholder={`Select ${label.toLowerCase()}`}
-        onFocus={() => { setQuery(''); setOpen(true) }}
+        onMouseDown={(e) => { e.preventDefault(); onDownloadPrompt() }}
+        readOnly
         onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
         className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-700 dark:text-white"
       />
@@ -170,14 +173,15 @@ export default function BusRoutesPage() {
     try {
       const res = await routesApi.list(p)
       if (p === 1) {
-        setRoutes(res.data.data)
+        setRoutes(res.data.data ?? [])
       } else {
-        setRoutes((prev) => [...prev, ...res.data.data])
+        setRoutes((prev) => [...prev, ...(res.data.data ?? [])])
       }
-      setLastPage(res.data.last_page)
+      setLastPage(res.data.last_page ?? 1)
       setPage(p)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to load routes.')
+      if (!(err instanceof ApiError && err.isServerError))
+        setError(err instanceof ApiError ? err.message : 'Failed to load routes.')
     } finally {
       setLoading(false)
     }
@@ -196,11 +200,12 @@ export default function BusRoutesPage() {
       if (sourceSite) params.source_place_id = sourceSite.id
       if (destSite) params.destination_place_id = destSite.id
       const res = await routesApi.search(params)
-      setRoutes(res.data.data)
-      setLastPage(res.data.last_page)
+      setRoutes(res.data.data ?? [])
+      setLastPage(res.data.last_page ?? 1)
       setPage(1)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Search failed.')
+      if (!(err instanceof ApiError && err.isServerError))
+        setError(err instanceof ApiError ? err.message : 'Search failed.')
     } finally {
       setSearching(false)
     }
@@ -223,8 +228,8 @@ export default function BusRoutesPage() {
       <form onSubmit={handleSearch} className="mb-8 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
         <h2 className="mb-4 font-semibold text-neutral-900 dark:text-white">Search Routes</h2>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <BusDropdown label="From" value={sourceSite} onChange={setSourceSite} />
-          <BusDropdown label="To" value={destSite} onChange={setDestSite} />
+          <BusDropdown label="From" value={sourceSite} onChange={setSourceSite} onDownloadPrompt={() => setShowDownloadModal(true)} />
+          <BusDropdown label="To" value={destSite} onChange={setDestSite} onDownloadPrompt={() => setShowDownloadModal(true)} />
           <div className="flex gap-2">
             <button
               type="submit"

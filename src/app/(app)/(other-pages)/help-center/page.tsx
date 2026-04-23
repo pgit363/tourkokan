@@ -8,16 +8,16 @@ const faqs = [
     category: 'Getting Started',
     items: [
       {
-        q: 'What is TourKokan?',
-        a: 'TourKokan is your guide to exploring the Konkan coast of Maharashtra. We list beaches, forts, waterfalls, temples, and local events to help travellers discover hidden gems along the coast.',
+        q: 'What is Tourkokan?',
+        a: 'Tourkokan is your guide to exploring the Tourkokan coast of Maharashtra. We list beaches, forts, waterfalls, temples, and local events to help travellers discover hidden gems along the coast.',
       },
       {
         q: 'Do I need an account to browse destinations?',
         a: 'You can browse the home page freely. To explore destinations, events, gallery, and bus routes in detail, you need a quick guest account — it takes just one tap and no password is required.',
       },
       {
-        q: 'Is TourKokan free to use?',
-        a: 'Yes, TourKokan is completely free for travellers. You can explore all destinations, events, and routes without any charges.',
+        q: 'Is Tourkokan free to use?',
+        a: 'Yes, Tourkokan is completely free for travellers. You can explore all destinations, events, and routes without any charges.',
       },
     ],
   },
@@ -34,7 +34,7 @@ const faqs = [
       },
       {
         q: 'Can I upgrade from a guest account to a full account?',
-        a: 'Full account registration with email is available on the TourKokan mobile app. Download it from Google Play to get a permanent account with more features.',
+        a: 'Full account registration with email is available on the Tourkokan mobile app. Download it from Google Play to get a permanent account with more features.',
       },
     ],
   },
@@ -77,7 +77,7 @@ const faqs = [
       },
       {
         q: 'How can I submit an event?',
-        a: 'Event submissions are currently handled through the TourKokan mobile app or by contacting us directly via the Contact page.',
+        a: 'Event submissions are currently handled through the Tourkokan mobile app or by contacting us directly via the Contact page.',
       },
     ],
   },
@@ -85,12 +85,12 @@ const faqs = [
     category: 'Advertising',
     items: [
       {
-        q: 'How can I advertise my business on TourKokan?',
+        q: 'How can I advertise my business on Tourkokan?',
         a: 'Visit our Advertise page to see available packages and pricing. Fill out the enquiry form and our team will get back to you within 24 hours.',
       },
       {
         q: 'What types of businesses can advertise?',
-        a: 'Hotels, homestays, restaurants, boat tours, water sports operators, local experiences, and any business serving Konkan travellers can advertise on TourKokan.',
+        a: 'Hotels, homestays, restaurants, boat tours, water sports operators, local experiences, and any business serving Tourkokan travellers can advertise on Tourkokan.',
       },
     ],
   },
@@ -129,7 +129,7 @@ export default function HelpCenterPage() {
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Help Center</h1>
         <p className="mt-2 text-neutral-500 dark:text-neutral-400">
-          Find answers to common questions about TourKokan.
+          Find answers to common questions about Tourkokan.
         </p>
       </div>
 

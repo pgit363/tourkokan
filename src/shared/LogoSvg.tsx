@@ -9,7 +9,7 @@ const LogoSvg = () => {
       <circle cx="15" cy="12" r="4.5" fill="white" />
       <circle cx="15" cy="12" r="2" fill="#EA580C" />
 
-      {/* TourKokan wordmark */}
+      {/* Tourkokan wordmark */}
       <text x="33" y="14" fontFamily="'Poppins', sans-serif" fontSize="13" fontWeight="700" fill="#1F2937">Tour</text>
       <text x="33" y="28" fontFamily="'Poppins', sans-serif" fontSize="13" fontWeight="600" fill="#EA580C">Kokan</text>
     </svg>

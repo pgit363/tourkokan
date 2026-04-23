@@ -12,13 +12,17 @@ interface DownloadAppModalProps {
 const DownloadAppModal = ({ isOpen, onClose, title = 'Get More Details' }: DownloadAppModalProps) => {
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
+      {/* Backdrop — clicking it closes the modal */}
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
 
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-neutral-800">
+      <div className="fixed inset-0 flex items-center justify-center p-4" onClick={onClose}>
+        <DialogPanel
+          className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-neutral-800"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Close button */}
           <button
+            type="button"
             onClick={onClose}
             className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-700"
           >
@@ -42,7 +46,7 @@ const DownloadAppModal = ({ isOpen, onClose, title = 'Get More Details' }: Downl
           </DialogTitle>
 
           <p className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
-            Download the TourKokan app to explore full details, photos, reviews, and more — for free.
+            Download the Tourkokan app to explore full details, photos, reviews, and more — for free.
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">

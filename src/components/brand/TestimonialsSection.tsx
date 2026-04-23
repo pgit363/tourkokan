@@ -3,7 +3,7 @@ const testimonials = [
     name: 'Priya Desai',
     location: 'Pune',
     rating: 5,
-    text: "TourKokan made our family trip to Malvan so smooth! The bus route feature saved us from getting lost, and we discovered Sindhudurg Fort thanks to the app's recommendations.",
+    text: "Tourkokan made our family trip to Malvan so smooth! The bus route feature saved us from getting lost, and we discovered Sindhudurg Fort thanks to the app's recommendations.",
     avatar: 'P',
     color: 'bg-orange-500',
   },
@@ -11,7 +11,7 @@ const testimonials = [
     name: 'Rahul Naik',
     location: 'Mumbai',
     rating: 5,
-    text: "I've traveled to Konkan 5 times but the app showed me hidden spots I never knew existed. The local food guide took us to the best Malvani fish thali ever!",
+    text: "I've traveled to Tourkokan 5 times but the app showed me hidden spots I never knew existed. The local food guide took us to the best Malvani fish thali ever!",
     avatar: 'R',
     color: 'bg-blue-500',
   },
@@ -19,7 +19,7 @@ const testimonials = [
     name: 'Sneha Joshi',
     location: 'Nashik',
     rating: 5,
-    text: "Planning a solo trip to Konkan felt overwhelming, but TourKokan made it easy. The accommodation section had homestays that weren't on any other platform.",
+    text: "Planning a solo trip to Tourkokan felt overwhelming, but Tourkokan made it easy. The accommodation section had homestays that weren't on any other platform.",
     avatar: 'S',
     color: 'bg-teal-500',
   },
@@ -35,7 +35,7 @@ const testimonials = [
     name: 'Kavita Rane',
     location: 'Thane',
     rating: 5,
-    text: "We used TourKokan for our anniversary trip. The curated experience packages for Devgad and Ganpatipule were perfect — detailed, accurate, and beautifully presented.",
+    text: "We used Tourkokan for our anniversary trip. The curated experience packages for Devgad and Ganpatipule were perfect — detailed, accurate, and beautifully presented.",
     avatar: 'K',
     color: 'bg-purple-500',
   },
@@ -43,7 +43,7 @@ const testimonials = [
     name: 'Vikram Sawant',
     location: 'Goa',
     rating: 5,
-    text: "Being from nearby Goa, I thought I knew Konkan well. This app proved me wrong. Amboli Ghat in monsoon is absolutely stunning — found it on TourKokan!",
+    text: "Being from nearby Goa, I thought I knew Tourkokan well. This app proved me wrong. Amboli Ghat in monsoon is absolutely stunning — found it on Tourkokan!",
     avatar: 'V',
     color: 'bg-red-500',
   },
@@ -61,7 +61,7 @@ const TestimonialsSection = () => {
             What our users say
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-neutral-500 dark:text-neutral-400">
-            Join thousands of happy travellers who discovered Konkan with TourKokan.
+            Join thousands of happy travellers who discovered Tourkokan with Tourkokan.
           </p>
         </div>
 

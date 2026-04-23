@@ -46,7 +46,7 @@ const AdvertisePage = () => {
     try {
       const payload = {
         ...form,
-        message: form.message || `Interested in advertising with TourKokan.`,
+        message: form.message || `Interested in advertising with Tourkokan.`,
       }
       const res = await fetch(`${API_BASE}/v2/addGuestQuery`, {
         method: 'POST',
@@ -83,10 +83,10 @@ const AdvertisePage = () => {
             Advertising
           </span>
           <h1 className="mt-4 text-4xl font-bold text-neutral-900 sm:text-5xl dark:text-white">
-            Reach Konkan Travellers
+            Reach Tourkokan Travellers
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-neutral-500 dark:text-neutral-400">
-            TourKokan connects your business with thousands of travellers exploring the Konkan coast every month.
+            Tourkokan connects your business with thousands of travellers exploring the Tourkokan coast every month.
             Advertise your hotel, restaurant, experience, or service directly in the app.
           </p>
         </div>
@@ -101,7 +101,7 @@ const AdvertisePage = () => {
                 </svg>
               ),
               title: 'Targeted Audience',
-              desc: 'Reach travellers actively planning or exploring Konkan — the most relevant audience for your business.',
+              desc: 'Reach travellers actively planning or exploring Tourkokan — the most relevant audience for your business.',
             },
             {
               icon: (

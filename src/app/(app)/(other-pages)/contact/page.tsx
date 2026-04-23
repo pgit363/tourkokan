@@ -75,8 +75,8 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Email</h3>
-                  <a href="mailto:support@tourkokan.com" className="mt-1 block text-neutral-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400">
-                    support@tourkokan.com
+                  <a href="mailto:support@Tourkokan.com" className="mt-1 block text-neutral-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400">
+                    support@Tourkokan.com
                   </a>
                 </div>
               </div>
@@ -113,7 +113,7 @@ const ContactPage = () => {
                 <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Follow Us</h3>
                 <div className="flex gap-3">
                   <a
-                    href="https://www.facebook.com/tourkokan"
+                    href="https://www.facebook.com/Tourkokan"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-primary-500 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-400"
@@ -124,7 +124,7 @@ const ContactPage = () => {
                     </svg>
                   </a>
                   <a
-                    href="https://www.instagram.com/tourkokan"
+                    href="https://www.instagram.com/Tourkokan"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition hover:border-primary-500 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-400"

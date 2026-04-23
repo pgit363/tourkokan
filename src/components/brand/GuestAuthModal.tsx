@@ -58,7 +58,7 @@ const GuestAuthModal = ({ isOpen, onClose, onSuccess }: GuestAuthModalProps) => 
           </DialogTitle>
 
           <p className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
-            We&apos;ll create a temporary guest account for you to explore TourKokan.
+            We&apos;ll create a temporary guest account for you to explore Tourkokan.
           </p>
 
           {/* Info boxes */}
@@ -86,7 +86,7 @@ const GuestAuthModal = ({ isOpen, onClose, onSuccess }: GuestAuthModalProps) => 
           </button>
 
           <p className="mt-3 text-center text-xs text-neutral-400">
-            For a full experience, download the TourKokan app
+            For a full experience, download the Tourkokan app
           </p>
         </DialogPanel>
       </div>
