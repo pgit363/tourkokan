@@ -70,7 +70,7 @@ export default function GalleryPage() {
 
   const handleLoadMore = async () => {
     const next = page + 1
-    if (next >= 3) { setShowDownloadModal(true); return }
+    if (next >= 2) { setShowDownloadModal(true); return }
     setPage(next)
     setLoading(true)
     try {
@@ -100,7 +100,10 @@ export default function GalleryPage() {
           type="search"
           placeholder="Search photos…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length >= 2) { setShowDownloadModal(true); return }
+            setSearch(e.target.value)
+          }}
           className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white sm:max-w-xs"
         />
       </div>

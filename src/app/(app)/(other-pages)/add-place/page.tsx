@@ -1,9 +1,10 @@
 'use client'
 
 import { categoriesApi, Category } from '@/lib/api'
-import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, ArrowLeftIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ImageAdd02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useEffect, useRef, useState } from 'react'
 
 const TOTAL_STEPS = 4
@@ -49,7 +50,20 @@ const Step1 = ({
   onChange: (key: string, val: string) => void
   categories: Category[]
 }) => {
-  const parents = categories.filter((c) => !c.parent_id)
+  const [parentId, setParentId] = useState('')
+
+  const selectedParent = categories.find((c) => String(c.id) === parentId)
+  const subCategories = selectedParent?.sub_categories ?? []
+
+  const handleParentChange = (val: string) => {
+    setParentId(val)
+    onChange('category_id', '')
+    // if parent has no sub-categories, use parent id directly
+    const parent = categories.find((c) => String(c.id) === val)
+    if (parent && (!parent.sub_categories || parent.sub_categories.length === 0)) {
+      onChange('category_id', val)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -74,27 +88,126 @@ const Step1 = ({
       <FieldWrap label="Category">
         <select
           className={inputCls}
-          value={data.category_id ?? ''}
-          onChange={(e) => onChange('category_id', e.target.value)}
+          value={parentId}
+          onChange={(e) => handleParentChange(e.target.value)}
         >
           <option value="">Select a category</option>
-          {parents.map((parent) => {
-            const children = categories.filter((c) => c.parent_id === parent.id)
-            return children.length > 0 ? (
-              <optgroup key={parent.id} label={parent.name}>
-                {children.map((sub) => (
-                  <option key={sub.id} value={sub.id}>{sub.name}</option>
-                ))}
-              </optgroup>
-            ) : (
-              <option key={parent.id} value={parent.id}>{parent.name}</option>
-            )
-          })}
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+      </FieldWrap>
+
+      <FieldWrap label="Sub-category">
+        <select
+          className={inputCls}
+          value={data.category_id ?? ''}
+          onChange={(e) => onChange('category_id', e.target.value)}
+          disabled={subCategories.length === 0}
+        >
+          <option value="">{subCategories.length === 0 ? 'Select a category first' : 'Select a sub-category'}</option>
+          {subCategories.map((sub) => (
+            <option key={sub.id} value={sub.id}>{sub.name}</option>
+          ))}
         </select>
       </FieldWrap>
     </div>
   )
 }
+
+// ── Map Picker Modal ──────────────────────────────────────────────────────────
+
+type LatLng = { lat: number; lng: number }
+const KOKAN_CENTER: LatLng = { lat: 16.7, lng: 73.3 }
+
+const MapPickerModal = ({
+  isOpen,
+  onClose,
+  initialPos,
+  onConfirm,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  initialPos: LatLng | null
+  onConfirm: (pos: LatLng) => void
+}) => {
+  const [pos, setPos] = useState<LatLng>(initialPos ?? KOKAN_CENTER)
+
+  useEffect(() => {
+    if (isOpen) setPos(initialPos ?? KOKAN_CENTER)
+  }, [isOpen, initialPos])
+
+  if (!isOpen) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-neutral-800"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-4 dark:border-neutral-700">
+          <div className="flex items-center gap-2">
+            <MapPinIcon className="h-5 w-5 text-primary-600" />
+            <h3 className="font-semibold text-neutral-900 dark:text-white">Choose Location on Map</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <p className="px-5 py-2 text-xs text-neutral-500 dark:text-neutral-400">
+          Click anywhere on the map or drag the pin to set the exact location.
+        </p>
+
+        {/* Map */}
+        <div className="h-80 w-full">
+          <Map
+            defaultCenter={initialPos ?? KOKAN_CENTER}
+            defaultZoom={11}
+            mapId="tourkokan-picker"
+            gestureHandling="greedy"
+            disableDefaultUI={false}
+            onClick={(e) => {
+              if (e.detail.latLng) setPos({ lat: e.detail.latLng.lat, lng: e.detail.latLng.lng })
+            }}
+          >
+            <AdvancedMarker
+              position={pos}
+              draggable
+              onDragEnd={(e) => {
+                if (e.latLng) setPos({ lat: e.latLng.lat(), lng: e.latLng.lng() })
+              }}
+            />
+          </Map>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between border-t border-neutral-100 px-5 py-4 dark:border-neutral-700">
+          <p className="font-mono text-sm text-neutral-500 dark:text-neutral-400">
+            {pos.lat.toFixed(6)}, {pos.lng.toFixed(6)}
+          </p>
+          <button
+            type="button"
+            onClick={() => { onConfirm(pos); onClose() }}
+            className="rounded-xl bg-primary-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-700"
+          >
+            Use this location
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Step 2 ────────────────────────────────────────────────────────────────────
 
 const Step2 = ({
   data,
@@ -102,54 +215,66 @@ const Step2 = ({
 }: {
   data: Record<string, string>
   onChange: (key: string, val: string) => void
-}) => (
-  <div className="space-y-6">
-    <FieldWrap label="Taluka / Town">
-      <input
-        className={inputCls}
-        placeholder="e.g. Devgad"
-        value={data.taluka ?? ''}
-        onChange={(e) => onChange('taluka', e.target.value)}
-      />
-    </FieldWrap>
+}) => {
+  const [mapOpen, setMapOpen] = useState(false)
 
-    <FieldWrap label="District">
-      <input
-        className={inputCls}
-        placeholder="e.g. Sindhudurg"
-        value={data.district ?? ''}
-        onChange={(e) => onChange('district', e.target.value)}
-      />
-    </FieldWrap>
+  const initialPos: LatLng | null =
+    data.latitude && data.longitude
+      ? { lat: Number(data.latitude), lng: Number(data.longitude) }
+      : null
 
-    <div className="grid grid-cols-2 gap-4">
-      <FieldWrap label="Latitude" hint="e.g. 16.3782">
+  const handleConfirm = (pos: LatLng) => {
+    onChange('latitude', pos.lat.toFixed(6))
+    onChange('longitude', pos.lng.toFixed(6))
+  }
+
+  return (
+    <div className="space-y-6">
+      <FieldWrap label="Taluka / Town">
         <input
           className={inputCls}
-          type="number"
-          step="any"
-          placeholder="16.3782"
-          value={data.latitude ?? ''}
-          onChange={(e) => onChange('latitude', e.target.value)}
+          placeholder="e.g. Devgad"
+          value={data.taluka ?? ''}
+          onChange={(e) => onChange('taluka', e.target.value)}
         />
       </FieldWrap>
-      <FieldWrap label="Longitude" hint="e.g. 73.3804">
+
+      <FieldWrap label="District">
         <input
           className={inputCls}
-          type="number"
-          step="any"
-          placeholder="73.3804"
-          value={data.longitude ?? ''}
-          onChange={(e) => onChange('longitude', e.target.value)}
+          placeholder="e.g. Sindhudurg"
+          value={data.district ?? ''}
+          onChange={(e) => onChange('district', e.target.value)}
         />
       </FieldWrap>
-    </div>
 
-    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
-      <strong>Tip:</strong> Open Google Maps, right-click on the location, and copy the coordinates shown at the top of the menu.
+      <FieldWrap label="Coordinates">
+        <button
+          type="button"
+          onClick={() => setMapOpen(true)}
+          className="flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-primary-300 bg-primary-50 px-4 py-3 text-sm font-medium text-primary-700 transition hover:border-primary-400 hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
+        >
+          <MapPinIcon className="h-5 w-5 shrink-0" />
+          {initialPos
+            ? `${data.latitude}, ${data.longitude}`
+            : 'Choose location on map'}
+        </button>
+        {initialPos && (
+          <p className="mt-1.5 text-xs text-neutral-400">
+            Tap the button to adjust the pin position.
+          </p>
+        )}
+      </FieldWrap>
+
+      <MapPickerModal
+        isOpen={mapOpen}
+        onClose={() => setMapOpen(false)}
+        initialPos={initialPos}
+        onConfirm={handleConfirm}
+      />
     </div>
-  </div>
-)
+  )
+}
 
 const Step3 = ({
   data,
