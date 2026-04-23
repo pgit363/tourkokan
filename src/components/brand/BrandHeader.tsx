@@ -4,18 +4,10 @@ import { PlayStoreBadge } from '@/components/brand/AppBadges'
 import GuestAuthModal from '@/components/brand/GuestAuthModal'
 import Logo from '@/shared/Logo'
 import { useAuth } from '@/context/AuthContext'
+import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
-
-const allNavLinks = [
-  { href: '/destinations', label: 'Destinations', protected: true },
-  { href: '/events', label: 'Events', protected: true },
-  { href: '/bus-routes', label: 'Bus Routes', protected: true },
-  { href: '/gallery', label: 'Gallery', protected: true },
-  { href: '/about', label: 'About', protected: false },
-  { href: '/contact', label: 'Contact', protected: false },
-]
 
 const BrandHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -23,8 +15,18 @@ const BrandHeader = () => {
   const [guestModalOpen, setGuestModalOpen] = useState(false)
   const [pendingHref, setPendingHref] = useState<string | null>(null)
   const { user, isLoggedIn, logout } = useAuth()
+  const { lang, setLang, t } = useLang()
   const pathname = usePathname()
   const router = useRouter()
+
+  const allNavLinks = [
+    { href: '/destinations', label: t.header.destinations, protected: true },
+    { href: '/events', label: t.header.events, protected: true },
+    { href: '/bus-routes', label: t.header.busRoutes, protected: true },
+    { href: '/gallery', label: t.header.gallery, protected: true },
+    { href: '/about', label: lang === 'mr' ? 'आमच्याबद्दल' : 'About', protected: false },
+    { href: '/contact', label: lang === 'mr' ? 'संपर्क' : 'Contact', protected: false },
+  ]
 
   const handleLogout = async () => {
     await logout()
@@ -48,6 +50,16 @@ const BrandHeader = () => {
       setPendingHref(null)
     }
   }
+
+  const LangToggle = () => (
+    <button
+      onClick={() => setLang(lang === 'en' ? 'mr' : 'en')}
+      className="rounded-full border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-primary-400 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-primary-500 dark:hover:text-primary-400"
+      title={lang === 'en' ? 'Switch to Marathi' : 'Switch to English'}
+    >
+      {lang === 'en' ? 'मराठी' : 'EN'}
+    </button>
+  )
 
   return (
     <>
@@ -81,6 +93,7 @@ const BrandHeader = () => {
 
           {/* CTA — auth aware */}
           <div className="hidden items-center gap-3 lg:flex">
+            <LangToggle />
             {isLoggedIn ? (
               <div className="relative">
                 <button
@@ -95,12 +108,12 @@ const BrandHeader = () => {
                     {!user?.isGuest && (
                       <>
                         <div className="my-1 border-t border-neutral-100 dark:border-neutral-700" />
-                        <Link href="/account" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">My Account</Link>
-                        <Link href="/account-savelists" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">Saved Places</Link>
+                        <Link href="/account" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">{t.header.myAccount}</Link>
+                        <Link href="/account-savelists" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">{t.header.savedPlaces}</Link>
                       </>
                     )}
                     <div className="my-1 border-t border-neutral-100 dark:border-neutral-700" />
-                    <button onClick={handleLogout} className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Sign out</button>
+                    <button onClick={handleLogout} className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">{t.header.signOut}</button>
                   </div>
                 )}
               </div>
@@ -109,7 +122,7 @@ const BrandHeader = () => {
                 onClick={() => setGuestModalOpen(true)}
                 className="rounded-full border border-neutral-200 px-4 py-1.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
               >
-                Sign in
+                {t.common.signIn}
               </button>
             )}
             <PlayStoreBadge width={130} />
@@ -161,27 +174,30 @@ const BrandHeader = () => {
               ))}
             </nav>
 
-            {/* Mobile auth section */}
+            {/* Mobile auth + lang section */}
             <div className="mt-4 border-t border-neutral-100 pt-4 dark:border-neutral-700">
               {isLoggedIn ? (
                 <div className="space-y-1">
                   <p className="px-3 py-1 text-sm font-medium text-neutral-900 dark:text-white">{user?.name}</p>
                   {!user?.isGuest && (
                     <>
-                      <Link href="/account" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">My Account</Link>
-                      <Link href="/account-savelists" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">Saved Places</Link>
+                      <Link href="/account" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">{t.header.myAccount}</Link>
+                      <Link href="/account-savelists" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">{t.header.savedPlaces}</Link>
                     </>
                   )}
-                  <button onClick={handleLogout} className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Sign out</button>
+                  <button onClick={handleLogout} className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">{t.header.signOut}</button>
                 </div>
               ) : (
                 <button
                   onClick={() => { setMenuOpen(false); setGuestModalOpen(true) }}
                   className="w-full rounded-xl bg-primary-600 py-2.5 text-center text-sm font-medium text-white"
                 >
-                  Sign in as Guest
+                  {t.auth.continueAsGuest}
                 </button>
               )}
+              <div className="mt-3 flex justify-center">
+                <LangToggle />
+              </div>
             </div>
 
             <div className="mt-4 flex justify-center">

@@ -2,9 +2,12 @@
 
 import { ApiError, Route, routesApi, sitesApi, Site } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
+import { useLang } from '@/context/LanguageContext'
 import { useEffect, useRef, useState } from 'react'
 
-const RouteCard = ({ route }: { route: Route }) => (
+const RouteCard = ({ route }: { route: Route }) => {
+  const { t } = useLang()
+  return (
   <div className="rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       {/* Route name & endpoints */}
@@ -27,25 +30,25 @@ const RouteCard = ({ route }: { route: Route }) => (
       <div className="flex flex-wrap gap-4 text-sm text-neutral-500 sm:text-right">
         {route.start_time && (
           <div>
-            <p className="text-xs text-neutral-400">Departure</p>
+            <p className="text-xs text-neutral-400">{t.busRoutes.departure}</p>
             <p className="font-medium text-neutral-900 dark:text-white">{route.start_time}</p>
           </div>
         )}
         {route.end_time && (
           <div>
-            <p className="text-xs text-neutral-400">Arrival</p>
+            <p className="text-xs text-neutral-400">{t.busRoutes.arrival}</p>
             <p className="font-medium text-neutral-900 dark:text-white">{route.end_time}</p>
           </div>
         )}
         {route.total_time && (
           <div>
-            <p className="text-xs text-neutral-400">Duration</p>
+            <p className="text-xs text-neutral-400">{t.busRoutes.duration}</p>
             <p className="font-medium text-neutral-900 dark:text-white">{route.total_time}</p>
           </div>
         )}
         {route.distance && (
           <div>
-            <p className="text-xs text-neutral-400">Distance</p>
+            <p className="text-xs text-neutral-400">{t.busRoutes.distance}</p>
             <p className="font-medium text-neutral-900 dark:text-white">{route.distance}</p>
           </div>
         )}
@@ -55,7 +58,7 @@ const RouteCard = ({ route }: { route: Route }) => (
     {/* Stops */}
     {route.routeStops && route.routeStops.length > 0 && (
       <div className="mt-4 border-t border-neutral-100 pt-4 dark:border-neutral-700">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-400">Stops</p>
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-400">{t.busRoutes.stops}</p>
         <div className="flex flex-wrap gap-2">
           {route.routeStops.map((stop, i) => (
             <span key={stop.id} className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300">
@@ -67,7 +70,8 @@ const RouteCard = ({ route }: { route: Route }) => (
       </div>
     )}
   </div>
-)
+  )
+}
 
 function BusDropdown({
   label,
@@ -152,6 +156,7 @@ function BusDropdown({
 }
 
 export default function BusRoutesPage() {
+  const { t } = useLang()
   const [routes, setRoutes] = useState<Route[]>([])
   const [sourceSite, setSourceSite] = useState<Site | null>(null)
   const [destSite, setDestSite] = useState<Site | null>(null)
@@ -220,23 +225,23 @@ export default function BusRoutesPage() {
   return (
     <div className="container py-16 lg:py-20">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Bus Routes</h1>
-        <p className="mt-2 text-neutral-500 dark:text-neutral-400">Find bus routes connecting Kokan destinations.</p>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.busRoutes.pageTitle}</h1>
+        <p className="mt-2 text-neutral-500 dark:text-neutral-400">{t.busRoutes.pageSubtitle}</p>
       </div>
 
       {/* Search form */}
       <form onSubmit={handleSearch} className="mb-8 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
-        <h2 className="mb-4 font-semibold text-neutral-900 dark:text-white">Search Routes</h2>
+        <h2 className="mb-4 font-semibold text-neutral-900 dark:text-white">{t.busRoutes.searchRoutes}</h2>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <BusDropdown label="From" value={sourceSite} onChange={setSourceSite} onDownloadPrompt={() => setShowDownloadModal(true)} />
-          <BusDropdown label="To" value={destSite} onChange={setDestSite} onDownloadPrompt={() => setShowDownloadModal(true)} />
+          <BusDropdown label={t.busRoutes.from} value={sourceSite} onChange={setSourceSite} onDownloadPrompt={() => setShowDownloadModal(true)} />
+          <BusDropdown label={t.busRoutes.to} value={destSite} onChange={setDestSite} onDownloadPrompt={() => setShowDownloadModal(true)} />
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={searching}
               className="rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700 disabled:opacity-50"
             >
-              {searching ? 'Searching…' : 'Search'}
+              {searching ? t.common.searching : t.busRoutes.search}
             </button>
             {(sourceSite || destSite) && (
               <button
@@ -244,7 +249,7 @@ export default function BusRoutesPage() {
                 onClick={clearSearch}
                 className="rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
               >
-                Clear
+                {t.busRoutes.clear}
               </button>
             )}
           </div>
@@ -258,7 +263,7 @@ export default function BusRoutesPage() {
       )}
 
       {routes.length === 0 && !loading ? (
-        <div className="py-20 text-center text-neutral-400">No routes found.</div>
+        <div className="py-20 text-center text-neutral-400">{t.busRoutes.noRoutes}</div>
       ) : (
         <div className="space-y-4">
           {routes.map((route) => (
@@ -279,7 +284,7 @@ export default function BusRoutesPage() {
             onClick={() => page + 1 >= 3 ? setShowDownloadModal(true) : fetchRoutes(page + 1)}
             className="rounded-xl border border-neutral-200 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
-            Load more
+            {t.common.loadMore}
           </button>
         </div>
       )}

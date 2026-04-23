@@ -1,6 +1,7 @@
 'use client'
 
 import { categoriesApi, Category } from '@/lib/api'
+import { useLang } from '@/context/LanguageContext'
 import { ArrowRightIcon, ArrowLeftIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ImageAdd02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -8,13 +9,6 @@ import { AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useEffect, useRef, useState } from 'react'
 
 const TOTAL_STEPS = 4
-
-const stepTitles = [
-  'Basic Information',
-  'Location Details',
-  'Description',
-  'Photos & Submit',
-]
 
 // ── Reusable field wrapper ────────────────────────────────────────────────────
 
@@ -50,6 +44,7 @@ const Step1 = ({
   onChange: (key: string, val: string) => void
   categories: Category[]
 }) => {
+  const { t } = useLang()
   const [parentId, setParentId] = useState('')
 
   const selectedParent = categories.find((c) => String(c.id) === parentId)
@@ -58,7 +53,6 @@ const Step1 = ({
   const handleParentChange = (val: string) => {
     setParentId(val)
     onChange('category_id', '')
-    // if parent has no sub-categories, use parent id directly
     const parent = categories.find((c) => String(c.id) === val)
     if (parent && (!parent.sub_categories || parent.sub_categories.length === 0)) {
       onChange('category_id', val)
@@ -70,42 +64,42 @@ const Step1 = ({
       <FieldWrap label="Place Name (English)">
         <input
           className={inputCls}
-          placeholder="e.g. Devgad Beach"
+          placeholder={t.addPlace.namePlaceholder}
           value={data.name ?? ''}
           onChange={(e) => onChange('name', e.target.value)}
         />
       </FieldWrap>
 
-      <FieldWrap label="Place Name (Marathi)" hint="Optional — helps local travellers find the place">
+      <FieldWrap label={t.addPlace.mrNameLabel} hint={t.addPlace.mrNameHint}>
         <input
           className={inputCls}
-          placeholder="e.g. देवगड बीच"
+          placeholder={t.addPlace.mrNamePlaceholder}
           value={data.mr_name ?? ''}
           onChange={(e) => onChange('mr_name', e.target.value)}
         />
       </FieldWrap>
 
-      <FieldWrap label="Category">
+      <FieldWrap label={t.addPlace.categoryLabel}>
         <select
           className={inputCls}
           value={parentId}
           onChange={(e) => handleParentChange(e.target.value)}
         >
-          <option value="">Select a category</option>
+          <option value="">{t.addPlace.categoryPlaceholder}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
       </FieldWrap>
 
-      <FieldWrap label="Sub-category">
+      <FieldWrap label={t.addPlace.subCategoryLabel}>
         <select
           className={inputCls}
           value={data.category_id ?? ''}
           onChange={(e) => onChange('category_id', e.target.value)}
           disabled={subCategories.length === 0}
         >
-          <option value="">{subCategories.length === 0 ? 'Select a category first' : 'Select a sub-category'}</option>
+          <option value="">{subCategories.length === 0 ? t.addPlace.subCategoryFirst : t.addPlace.subCategoryPlaceholder}</option>
           {subCategories.map((sub) => (
             <option key={sub.id} value={sub.id}>{sub.name}</option>
           ))}
@@ -131,6 +125,7 @@ const MapPickerModal = ({
   initialPos: LatLng | null
   onConfirm: (pos: LatLng) => void
 }) => {
+  const { t } = useLang()
   const [pos, setPos] = useState<LatLng>(initialPos ?? KOKAN_CENTER)
 
   useEffect(() => {
@@ -152,7 +147,7 @@ const MapPickerModal = ({
         <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-4 dark:border-neutral-700">
           <div className="flex items-center gap-2">
             <MapPinIcon className="h-5 w-5 text-primary-600" />
-            <h3 className="font-semibold text-neutral-900 dark:text-white">Choose Location on Map</h3>
+            <h3 className="font-semibold text-neutral-900 dark:text-white">{t.addPlace.chooseOnMapTitle}</h3>
           </div>
           <button
             type="button"
@@ -164,7 +159,7 @@ const MapPickerModal = ({
         </div>
 
         <p className="px-5 py-2 text-xs text-neutral-500 dark:text-neutral-400">
-          Click anywhere on the map or drag the pin to set the exact location.
+          {t.addPlace.chooseOnMapHint}
         </p>
 
         {/* Map */}
@@ -199,7 +194,7 @@ const MapPickerModal = ({
             onClick={() => { onConfirm(pos); onClose() }}
             className="rounded-xl bg-primary-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-700"
           >
-            Use this location
+            {t.addPlace.useThisLocation}
           </button>
         </div>
       </div>
@@ -216,6 +211,7 @@ const Step2 = ({
   data: Record<string, string>
   onChange: (key: string, val: string) => void
 }) => {
+  const { t } = useLang()
   const [mapOpen, setMapOpen] = useState(false)
 
   const initialPos: LatLng | null =
@@ -230,25 +226,25 @@ const Step2 = ({
 
   return (
     <div className="space-y-6">
-      <FieldWrap label="Taluka / Town">
+      <FieldWrap label={t.addPlace.talukaLabel}>
         <input
           className={inputCls}
-          placeholder="e.g. Devgad"
+          placeholder={t.addPlace.talukaPlaceholder}
           value={data.taluka ?? ''}
           onChange={(e) => onChange('taluka', e.target.value)}
         />
       </FieldWrap>
 
-      <FieldWrap label="District">
+      <FieldWrap label={t.addPlace.districtLabel}>
         <input
           className={inputCls}
-          placeholder="e.g. Sindhudurg"
+          placeholder={t.addPlace.districtPlaceholder}
           value={data.district ?? ''}
           onChange={(e) => onChange('district', e.target.value)}
         />
       </FieldWrap>
 
-      <FieldWrap label="Coordinates">
+      <FieldWrap label={t.addPlace.coordinatesLabel}>
         <button
           type="button"
           onClick={() => setMapOpen(true)}
@@ -257,11 +253,11 @@ const Step2 = ({
           <MapPinIcon className="h-5 w-5 shrink-0" />
           {initialPos
             ? `${data.latitude}, ${data.longitude}`
-            : 'Choose location on map'}
+            : t.addPlace.chooseOnMap}
         </button>
         {initialPos && (
           <p className="mt-1.5 text-xs text-neutral-400">
-            Tap the button to adjust the pin position.
+            {t.addPlace.adjustPin}
           </p>
         )}
       </FieldWrap>
@@ -282,22 +278,22 @@ const Step3 = ({
 }: {
   data: Record<string, string>
   onChange: (key: string, val: string) => void
-}) => (
-  <div className="space-y-6">
-    <FieldWrap
-      label="Description"
-      hint="Describe what makes this place special — best season to visit, nearby attractions, accessibility, etc."
-    >
-      <textarea
-        className={`${inputCls} resize-none`}
-        rows={8}
-        placeholder="Tell travellers about this place…"
-        value={data.description ?? ''}
-        onChange={(e) => onChange('description', e.target.value)}
-      />
-    </FieldWrap>
-  </div>
-)
+}) => {
+  const { t } = useLang()
+  return (
+    <div className="space-y-6">
+      <FieldWrap label={t.addPlace.descriptionLabel} hint={t.addPlace.descriptionHint}>
+        <textarea
+          className={`${inputCls} resize-none`}
+          rows={8}
+          placeholder={t.addPlace.descriptionPlaceholder}
+          value={data.description ?? ''}
+          onChange={(e) => onChange('description', e.target.value)}
+        />
+      </FieldWrap>
+    </div>
+  )
+}
 
 const ImageUploadBox = ({
   label,
@@ -344,16 +340,13 @@ const ImageUploadBox = ({
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function AddPlacePage() {
+  const { t } = useLang()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [coverImage, setCoverImage] = useState<File | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
 
-  // TODO: wire up submission
-  // const [submitting, setSubmitting] = useState(false)
-  // const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
-  // const [error, setError] = useState('')
-  // const [success, setSuccess] = useState(false)
+  const stepTitles = [t.addPlace.step1, t.addPlace.step2, t.addPlace.step3, t.addPlace.step4]
 
   useEffect(() => {
     categoriesApi.list().then((res) => setCategories(res.data.data)).catch(() => {})
@@ -361,60 +354,7 @@ export default function AddPlacePage() {
 
   const update = (key: string, val: string) => setFormData((prev) => ({ ...prev, [key]: val }))
 
-  // TODO: validation
-  // const validateStep = () => {
-  //   if (step === 1 && (!formData.name || !formData.category_id)) {
-  //     setError('Place name and category are required.')
-  //     return false
-  //   }
-  //   if (step === 2 && !formData.taluka) {
-  //     setError('Taluka / Town is required.')
-  //     return false
-  //   }
-  //   if (step === 3 && !formData.description) {
-  //     setError('Description is required.')
-  //     return false
-  //   }
-  //   setError('')
-  //   return true
-  // }
-
-  const handleNext = () => {
-    // if (!validateStep()) return
-    setStep((s) => Math.min(s + 1, TOTAL_STEPS))
-  }
-
-  // TODO: API submission
-  // const handleSubmit = async () => {
-  //   setSubmitting(true)
-  //   setError('')
-  //   setFieldErrors({})
-  //   try {
-  //     const form = new FormData()
-  //     form.append('name', formData.name ?? '')
-  //     if (formData.mr_name) form.append('mr_name', formData.mr_name)
-  //     if (formData.category_id) form.append('category_id', formData.category_id)
-  //     if (formData.taluka) form.append('taluka', formData.taluka)
-  //     if (formData.district) form.append('district', formData.district)
-  //     if (formData.latitude) form.append('latitude', formData.latitude)
-  //     if (formData.longitude) form.append('longitude', formData.longitude)
-  //     form.append('description', formData.description ?? '')
-  //     if (coverImage) form.append('image', coverImage)
-  //     await sitesApi.addSite(form)
-  //     setSuccess(true)
-  //   } catch (err) {
-  //     if (err instanceof ApiError && err.errors) {
-  //       setFieldErrors(err.errors)
-  //     } else {
-  //       setError(err instanceof ApiError ? err.message : 'Submission failed. Please try again.')
-  //     }
-  //   } finally {
-  //     setSubmitting(false)
-  //   }
-  // }
-
-  // TODO: success screen
-  // if (success) { ... }
+  const handleNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS))
 
   return (
     <div className="mx-auto max-w-2xl px-4 pt-10 pb-24 sm:pt-16 lg:pb-32">
@@ -442,15 +382,15 @@ export default function AddPlacePage() {
         {step === 4 && (
           <div className="space-y-6">
             <ImageUploadBox
-              label="Cover Photo"
-              hint="Main photo shown on the destination card — JPG or PNG, up to 10 MB"
+              label={t.addPlace.coverPhotoLabel}
+              hint={t.addPlace.coverPhotoHint}
               file={coverImage}
               onFile={setCoverImage}
             />
 
             {/* Summary */}
             <div className="rounded-xl bg-neutral-50 p-4 text-sm dark:bg-neutral-700/50">
-              <p className="font-medium text-neutral-700 dark:text-neutral-300">Review your submission</p>
+              <p className="font-medium text-neutral-700 dark:text-neutral-300">{t.addPlace.reviewSubmission}</p>
               <ul className="mt-2 space-y-1 text-neutral-500 dark:text-neutral-400">
                 <li><strong>Name:</strong> {formData.name}</li>
                 {formData.mr_name && <li><strong>Marathi:</strong> {formData.mr_name}</li>}
@@ -460,15 +400,6 @@ export default function AddPlacePage() {
                 )}
               </ul>
             </div>
-
-            {/* TODO: field-level API errors */}
-            {/* {Object.entries(fieldErrors).length > 0 && (
-              <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                {Object.entries(fieldErrors).map(([field, msgs]) => (
-                  <p key={field}><strong>{field}:</strong> {msgs[0]}</p>
-                ))}
-              </div>
-            )} */}
           </div>
         )}
       </div>
@@ -482,7 +413,7 @@ export default function AddPlacePage() {
           className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-40 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
         >
           <ArrowLeftIcon className="h-4 w-4" />
-          {step === 1 ? 'Back' : 'Previous'}
+          {step === 1 ? t.common.back : t.common.previous}
         </button>
 
         {step < TOTAL_STEPS ? (
@@ -491,7 +422,7 @@ export default function AddPlacePage() {
             onClick={handleNext}
             className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700"
           >
-            Next Step {step + 1}
+            {t.common.next} {step + 1}
             <ArrowRightIcon className="h-4 w-4" />
           </button>
         ) : (
@@ -500,7 +431,7 @@ export default function AddPlacePage() {
             onClick={() => { /* TODO: handleSubmit() */ }}
             className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700"
           >
-            Submit Place
+            {t.addPlace.submitPlace}
             <ArrowRightIcon className="h-4 w-4" />
           </button>
         )}

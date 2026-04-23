@@ -1,9 +1,19 @@
 'use client'
 
 import { AppStoreBadgeSoon, PlayStoreBadge } from '@/components/brand/AppBadges'
+import { useLang } from '@/context/LanguageContext'
 import Image from 'next/image'
 
 const HeroSection = () => {
+  const { t } = useLang()
+
+  const stats = [
+    { value: '100+', label: t.home.statDestinations },
+    { value: '50+', label: t.home.statBusRoutes },
+    { value: '200+', label: t.home.statExperiences },
+    { value: '10K+', label: t.home.statDownloads },
+  ]
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
       {/* Background pattern */}
@@ -27,20 +37,19 @@ const HeroSection = () => {
           {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-1.5 text-sm text-primary-400">
             <span className="h-2 w-2 animate-pulse rounded-full bg-primary-500" />
-            Now Available on Google Play
+            {t.home.nowAvailable}
           </div>
 
           <h1 className="text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl">
-            Discover the
+            {t.home.heroTitle1}
             <br />
             <span className="bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-              Magic of Tourkokan
+              {t.home.heroTitle2}
             </span>
           </h1>
 
           <p className="mt-6 max-w-xl text-lg text-neutral-400 sm:text-xl">
-            Your ultimate travel companion for exploring the pristine beaches, ancient forts, lush forests, and vibrant
-            culture of Maharashtra&apos;s Tourkokan coast.
+            {t.home.heroSubtitle}
           </p>
 
           {/* Download Buttons */}
@@ -51,12 +60,7 @@ const HeroSection = () => {
 
           {/* Stats row */}
           <div className="mt-12 flex flex-wrap justify-center gap-8 lg:justify-start">
-            {[
-              { value: '100+', label: 'Destinations' },
-              { value: '50+', label: 'Bus Routes' },
-              { value: '200+', label: 'Experiences' },
-              { value: '10K+', label: 'Downloads' },
-            ].map((s) => (
+            {stats.map((s) => (
               <div key={s.label} className="text-center lg:text-left">
                 <div className="text-3xl font-bold text-white">{s.value}</div>
                 <div className="text-sm text-neutral-400">{s.label}</div>
@@ -67,12 +71,9 @@ const HeroSection = () => {
 
         {/* Right — App Mockup */}
         <div className="relative mt-16 flex flex-1 items-center justify-center lg:mt-0">
-          {/* Phone frame */}
           <div className="relative">
-            {/* Glow behind phone */}
             <div className="absolute inset-0 scale-95 rounded-[3rem] bg-primary-500 opacity-30 blur-2xl" />
 
-            {/* Phone shell */}
             <div className="relative z-10 w-[285px] overflow-hidden rounded-[3rem] border-4 border-neutral-700 bg-black shadow-2xl sm:w-[300px]" style={{ aspectRatio: '1080/2340' }}>
               <Image
                 src="/app-screenshot.png"
@@ -84,7 +85,7 @@ const HeroSection = () => {
               />
             </div>
 
-            {/* Floating badges */}
+            {/* Floating badge — destinations */}
             <div className="absolute right-0 top-32 z-20 flex translate-x-1/2 items-center gap-2 rounded-2xl bg-green-500 px-3 py-2 shadow-xl">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
                 <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,11 +93,12 @@ const HeroSection = () => {
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-semibold text-white">100+ Destinations</div>
-                <div className="text-xs text-green-100">Across Tourkokan coast</div>
+                <div className="text-xs font-semibold text-white">{t.home.badgeDestinationsCount}</div>
+                <div className="text-xs text-green-100">{t.home.badgeAcrossKokan}</div>
               </div>
             </div>
 
+            {/* Floating badge — rating */}
             <div className="absolute left-0 bottom-24 z-20 flex -translate-x-1/2 items-center gap-2 rounded-2xl bg-primary-600 px-3 py-2 shadow-xl">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
                 <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -104,8 +106,8 @@ const HeroSection = () => {
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-semibold text-white">4.8 Rating</div>
-                <div className="text-xs text-primary-100">Play Store</div>
+                <div className="text-xs font-semibold text-white">{t.home.badgeRating}</div>
+                <div className="text-xs text-primary-100">{t.home.badgePlayStore}</div>
               </div>
             </div>
           </div>

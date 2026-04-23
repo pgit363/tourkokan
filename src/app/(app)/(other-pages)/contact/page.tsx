@@ -1,9 +1,12 @@
 'use client'
 
+import { useLang } from '@/context/LanguageContext'
 import { useState } from 'react'
+
 const API_BASE = '/api/proxy'
 
 const ContactPage = () => {
+  const { t } = useLang()
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -57,9 +60,9 @@ const ContactPage = () => {
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-neutral-900 sm:text-5xl dark:text-white">Get in Touch</h1>
+          <h1 className="text-4xl font-bold text-neutral-900 sm:text-5xl dark:text-white">{t.contact.pageTitle}</h1>
           <p className="mt-4 text-lg text-neutral-500 dark:text-neutral-400">
-            Have a question or feedback? We&apos;d love to hear from you.
+            {t.contact.pageSubtitle}
           </p>
         </div>
 
@@ -74,7 +77,7 @@ const ContactPage = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Email</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t.contact.emailLabel}</h3>
                   <a href="mailto:support@Tourkokan.com" className="mt-1 block text-neutral-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400">
                     support@Tourkokan.com
                   </a>
@@ -89,7 +92,7 @@ const ContactPage = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Address</h3>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t.contact.addressLabel}</h3>
                   <p className="mt-1 text-neutral-900 dark:text-white">
                     Devgad, Sindhudurg<br />Maharashtra – 416 613<br />India
                   </p>
@@ -103,14 +106,14 @@ const ContactPage = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Response Time</h3>
-                  <p className="mt-1 text-neutral-900 dark:text-white">Within 24 hours</p>
+                  <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t.contact.responseTimeLabel}</h3>
+                  <p className="mt-1 text-neutral-900 dark:text-white">{t.contact.responseTimeValue}</p>
                 </div>
               </div>
 
               {/* Social Links */}
               <div>
-                <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Follow Us</h3>
+                <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t.contact.followUs}</h3>
                 <div className="flex gap-3">
                   <a
                     href="https://www.facebook.com/Tourkokan"
@@ -149,15 +152,13 @@ const ContactPage = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white">Message Sent!</h3>
-                  <p className="text-neutral-500 dark:text-neutral-400">
-                    Thank you for reaching out. We&apos;ll get back to you within 24 hours.
-                  </p>
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white">{t.contact.successTitle}</h3>
+                  <p className="text-neutral-500 dark:text-neutral-400">{t.contact.successMsg}</p>
                   <button
                     onClick={() => setStatus('idle')}
                     className="mt-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-700"
                   >
-                    Send Another Message
+                    {t.contact.sendAnother}
                   </button>
                 </div>
               ) : (
@@ -165,21 +166,21 @@ const ContactPage = () => {
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <div>
                       <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Full Name <span className="text-red-500">*</span>
+                        {t.contact.fullNameLabel} <span className="text-red-500">*</span>
                       </label>
                       <input
                         name="name"
                         value={form.name}
                         onChange={handleChange}
                         required
-                        placeholder="Your name"
+                        placeholder={t.contact.namePlaceholder}
                         className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                       />
                       {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name[0]}</p>}
                     </div>
                     <div>
                       <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Phone
+                        {t.contact.phoneLabel}
                       </label>
                       <input
                         name="phone"
@@ -194,7 +195,7 @@ const ContactPage = () => {
 
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                      Email Address
+                      {t.contact.emailAddressLabel}
                     </label>
                     <input
                       name="email"
@@ -209,7 +210,7 @@ const ContactPage = () => {
 
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                      Message <span className="text-red-500">*</span>
+                      {t.contact.messageLabel} <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       name="message"
@@ -217,7 +218,7 @@ const ContactPage = () => {
                       onChange={handleChange}
                       required
                       rows={5}
-                      placeholder="How can we help you?"
+                      placeholder={t.contact.messagePlaceholder}
                       className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-400"
                     />
                     {fieldErrors.message && <p className="mt-1 text-xs text-red-500">{fieldErrors.message[0]}</p>}
@@ -234,7 +235,7 @@ const ContactPage = () => {
                     disabled={status === 'loading'}
                     className="w-full rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 disabled:opacity-60"
                   >
-                    {status === 'loading' ? 'Sending…' : 'Send Message'}
+                    {status === 'loading' ? t.contact.sending : t.contact.sendButton}
                   </button>
                 </form>
               )}

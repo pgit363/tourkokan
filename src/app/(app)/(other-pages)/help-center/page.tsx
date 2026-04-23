@@ -1,5 +1,6 @@
 'use client'
 
+import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -120,6 +121,7 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
 }
 
 export default function HelpCenterPage() {
+  const { t } = useLang()
   const [activeCategory, setActiveCategory] = useState('Getting Started')
 
   const current = faqs.find((f) => f.category === activeCategory)
@@ -127,9 +129,9 @@ export default function HelpCenterPage() {
   return (
     <div className="container py-16 lg:py-20">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Help Center</h1>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.helpCenter.pageTitle}</h1>
         <p className="mt-2 text-neutral-500 dark:text-neutral-400">
-          Find answers to common questions about Tourkokan.
+          {t.helpCenter.pageSubtitle}
         </p>
       </div>
 
@@ -162,15 +164,15 @@ export default function HelpCenterPage() {
 
         {/* Still need help */}
         <div className="mt-10 rounded-2xl border border-neutral-100 bg-neutral-50 p-8 text-center dark:border-neutral-700 dark:bg-neutral-800/50">
-          <h2 className="font-semibold text-neutral-900 dark:text-white">Still need help?</h2>
+          <h2 className="font-semibold text-neutral-900 dark:text-white">{t.helpCenter.contactTitle}</h2>
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            Our team responds within 24 hours.
+            {t.helpCenter.contactSubtext}
           </p>
           <Link
             href="/contact"
             className="mt-4 inline-block rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700"
           >
-            Contact Us
+            {t.helpCenter.contactButton}
           </Link>
         </div>
       </div>

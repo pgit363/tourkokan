@@ -2,6 +2,7 @@
 
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { useAuth } from '@/context/AuthContext'
+import { useLang } from '@/context/LanguageContext'
 import { useState } from 'react'
 
 interface GuestAuthModalProps {
@@ -12,6 +13,7 @@ interface GuestAuthModalProps {
 
 const GuestAuthModal = ({ isOpen, onClose, onSuccess }: GuestAuthModalProps) => {
   const { loginAsGuest } = useAuth()
+  const { t } = useLang()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -54,11 +56,11 @@ const GuestAuthModal = ({ isOpen, onClose, onSuccess }: GuestAuthModalProps) => 
           </div>
 
           <DialogTitle className="text-center text-lg font-bold text-neutral-900 dark:text-white">
-            Continue as Guest
+            {t.auth.continueAsGuest}
           </DialogTitle>
 
           <p className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
-            We&apos;ll create a temporary guest account for you to explore Tourkokan.
+            {t.auth.guestNotice}
           </p>
 
           {/* Info boxes */}
@@ -82,11 +84,11 @@ const GuestAuthModal = ({ isOpen, onClose, onSuccess }: GuestAuthModalProps) => 
             disabled={loading}
             className="mt-5 w-full rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:opacity-60"
           >
-            {loading ? 'Creating session…' : 'Continue as Guest'}
+            {loading ? t.common.loading : t.auth.continueAsGuest}
           </button>
 
           <p className="mt-3 text-center text-xs text-neutral-400">
-            For a full experience, download the Tourkokan app
+            {t.auth.downloadApp}
           </p>
         </DialogPanel>
       </div>

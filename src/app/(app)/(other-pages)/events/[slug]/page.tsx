@@ -2,6 +2,7 @@
 
 import { ApiError, Event, eventsApi } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -22,12 +23,12 @@ function formatDate(dateStr?: string) {
 export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { isLoggedIn } = useAuth()
+  const { t } = useLang()
 
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // Interaction states
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
   const [going, setGoing] = useState(false)
@@ -50,7 +51,7 @@ export default function EventDetailPage() {
         setInterested(res.data.user_interaction?.is_interested ?? false)
         setInterestedCount(res.data.interested_count ?? 0)
       })
-      .catch((err) => setError(err instanceof ApiError ? err.message : 'Failed to load event.'))
+      .catch((err) => setError(err instanceof ApiError ? err.message : t.events.notFound))
       .finally(() => setLoading(false))
   }, [slug])
 
@@ -104,8 +105,8 @@ export default function EventDetailPage() {
   if (error || !event) {
     return (
       <div className="container py-20 text-center text-neutral-500">
-        <p>{error || 'Event not found.'}</p>
-        <Link href="/events" className="mt-4 inline-block text-primary-600 underline">Back to events</Link>
+        <p>{error || t.events.notFound}</p>
+        <Link href="/events" className="mt-4 inline-block text-primary-600 underline">{t.events.backToEvents}</Link>
       </div>
     )
   }
@@ -124,10 +125,10 @@ export default function EventDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className="absolute bottom-6 left-6 flex flex-wrap gap-2">
           {event.is_featured && (
-            <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-bold text-amber-900">Featured</span>
+            <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-bold text-amber-900">{t.events.featuredBadge}</span>
           )}
           {event.is_free ? (
-            <span className="rounded-full bg-green-500 px-3 py-1 text-sm font-bold text-white">Free Event</span>
+            <span className="rounded-full bg-green-500 px-3 py-1 text-sm font-bold text-white">{t.events.freeEvent}</span>
           ) : event.price ? (
             <span className="rounded-full bg-primary-600 px-3 py-1 text-sm font-bold text-white">₹{event.price}</span>
           ) : null}
@@ -146,7 +147,7 @@ export default function EventDetailPage() {
 
           {event.description && (
             <div className="mt-6">
-              <h2 className="mb-3 text-lg font-semibold text-neutral-900 dark:text-white">About this event</h2>
+              <h2 className="mb-3 text-lg font-semibold text-neutral-900 dark:text-white">{t.events.aboutThisEvent}</h2>
               <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">{event.description}</p>
             </div>
           )}
@@ -162,7 +163,7 @@ export default function EventDetailPage() {
                   : 'border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
               } disabled:opacity-50`}
             >
-              ♥ {liked ? 'Liked' : 'Like'}
+              ♥ {liked ? t.events.liked : t.events.like}
               {likeCount > 0 && <span className="ml-1 text-xs opacity-75">({likeCount})</span>}
             </button>
 
@@ -175,7 +176,7 @@ export default function EventDetailPage() {
                   : 'border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
               } disabled:opacity-50`}
             >
-              ✓ {going ? 'Going' : 'I\'m Going'}
+              ✓ {going ? t.events.going : t.events.imGoing}
               {goingCount > 0 && <span className="ml-1 text-xs opacity-75">({goingCount})</span>}
             </button>
 
@@ -188,23 +189,22 @@ export default function EventDetailPage() {
                   : 'border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
               } disabled:opacity-50`}
             >
-              ⭐ {interested ? 'Interested' : 'Interested'}
+              ⭐ {t.events.interested}
               {interestedCount > 0 && <span className="ml-1 text-xs opacity-75">({interestedCount})</span>}
             </button>
           </div>
 
           {!isLoggedIn && (
             <p className="mt-3 text-xs text-neutral-400">
-              <Link href="/login" className="text-primary-600 underline">Sign in</Link> to like, mark going or interested.
+              <Link href="/login" className="text-primary-600 underline">{t.common.signIn}</Link> {t.events.signInToInteract}
             </p>
           )}
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6 lg:col-span-1">
-          {/* Event details card */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-            <h3 className="mb-4 font-semibold text-neutral-900 dark:text-white">Event Details</h3>
+            <h3 className="mb-4 font-semibold text-neutral-900 dark:text-white">{t.events.eventDetails}</h3>
             <dl className="space-y-4 text-sm">
               {event.start_date && (
                 <div className="flex gap-3">
@@ -214,7 +214,7 @@ export default function EventDetailPage() {
                     </svg>
                   </dt>
                   <dd>
-                    <p className="text-xs text-neutral-400">Date</p>
+                    <p className="text-xs text-neutral-400">{t.events.dateLabel}</p>
                     <p className="font-medium text-neutral-900 dark:text-white">
                       {formatDate(event.start_date)}
                       {event.end_date && event.end_date !== event.start_date
@@ -238,7 +238,7 @@ export default function EventDetailPage() {
                     </svg>
                   </dt>
                   <dd>
-                    <p className="text-xs text-neutral-400">Location</p>
+                    <p className="text-xs text-neutral-400">{t.events.locationLabel}</p>
                     <p className="font-medium text-neutral-900 dark:text-white">{event.location}</p>
                     {event.address && <p className="text-neutral-500">{event.address}</p>}
                   </dd>
@@ -253,7 +253,7 @@ export default function EventDetailPage() {
                     </svg>
                   </dt>
                   <dd>
-                    <p className="text-xs text-neutral-400">Venue</p>
+                    <p className="text-xs text-neutral-400">{t.events.venueLabel}</p>
                     <Link href={`/destinations/${event.site.id}`} className="font-medium text-primary-600 underline dark:text-primary-400">
                       {event.site.name}
                     </Link>
@@ -263,8 +263,8 @@ export default function EventDetailPage() {
 
               <div className="border-t border-neutral-100 pt-3 dark:border-neutral-700">
                 <div className="flex justify-between text-xs text-neutral-400">
-                  <span>👁 {event.view_count ?? 0} views</span>
-                  <span>↗ {event.share_count ?? 0} shares</span>
+                  <span>👁 {event.view_count ?? 0} {t.events.viewsLabel}</span>
+                  <span>↗ {event.share_count ?? 0} {t.events.sharesLabel}</span>
                 </div>
               </div>
             </dl>
@@ -274,7 +274,7 @@ export default function EventDetailPage() {
             href="/events"
             className="block rounded-2xl border border-neutral-100 bg-white px-6 py-4 text-center text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
-            ← Back to events
+            {t.events.backToEvents}
           </Link>
         </div>
       </div>

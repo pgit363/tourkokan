@@ -2,6 +2,7 @@
 
 import { ApiError, Event, eventsApi, ftpUrl } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
+import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -83,6 +84,7 @@ const EventCard = ({ event }: { event: Event }) => {
 }
 
 export default function EventsPage() {
+  const { t } = useLang()
   const [events, setEvents] = useState<Event[]>([])
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<'all' | 'free' | 'featured'>('all')
@@ -148,15 +150,15 @@ export default function EventsPage() {
   return (
     <div className="container py-16 lg:py-20">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Events in Kokan</h1>
-        <p className="mt-2 text-neutral-500 dark:text-neutral-400">Festivals, cultural events, and local happenings across the Kokan coast.</p>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.events.pageTitle}</h1>
+        <p className="mt-2 text-neutral-500 dark:text-neutral-400">{t.events.pageSubtitle}</p>
       </div>
 
       {/* Filters */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
         <input
           type="search"
-          placeholder="Search events…"
+          placeholder={t.events.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white sm:max-w-xs"
@@ -172,7 +174,7 @@ export default function EventsPage() {
                   : 'border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
               }`}
             >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === 'all' ? t.events.all : f === 'free' ? t.events.free : t.events.featured}
             </button>
           ))}
         </div>
@@ -185,7 +187,7 @@ export default function EventsPage() {
       )}
 
       {events.length === 0 && !loading ? (
-        <div className="py-20 text-center text-neutral-400">No events found.</div>
+        <div className="py-20 text-center text-neutral-400">{t.events.noEvents}</div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
@@ -206,7 +208,7 @@ export default function EventsPage() {
             onClick={handleLoadMore}
             className="rounded-xl border border-neutral-200 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
-            Load more
+            {t.common.loadMore}
           </button>
         </div>
       )}

@@ -7,6 +7,7 @@ import CustomizeControl from './customize-control'
 import ThemeProvider from './theme-provider'
 import WhatsAppButton from '@/components/brand/WhatsAppButton'
 import { AuthProvider } from '@/context/AuthContext'
+import { LanguageProvider } from '@/context/LanguageContext'
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -147,14 +148,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <AuthProvider>
-          <ThemeProvider>
-            <div>
-              {children}
-              <CustomizeControl />
-            </div>
-          </ThemeProvider>
-          <WhatsAppButton />
-          {/* <ChatBot /> */}
+          <LanguageProvider>
+            <ThemeProvider>
+              <div>
+                {children}
+                <CustomizeControl />
+              </div>
+            </ThemeProvider>
+            <WhatsAppButton />
+            {/* <ChatBot /> */}
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

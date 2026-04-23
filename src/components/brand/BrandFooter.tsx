@@ -3,32 +3,12 @@
 import Logo from '@/shared/Logo'
 import GuestAuthModal from '@/components/brand/GuestAuthModal'
 import { useAuth } from '@/context/AuthContext'
+import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const protectedHrefs = new Set(['/destinations', '/events', '/bus-routes', '/gallery'])
-
-const footerLinks = {
-  Explore: [
-    { label: 'Destinations', href: '/destinations' },
-    { label: 'Events', href: '/events' },
-    { label: 'Bus Routes', href: '/bus-routes' },
-    { label: 'Gallery', href: '/gallery' },
-  ],
-  Company: [
-    { label: 'About Tourkokan', href: '/about' },
-    { label: 'Add a Place', href: '/add-place' },
-    { label: 'Advertise with Us', href: '/advertise' },
-    { label: 'Contact Us', href: '/contact' },
-  ],
-  Support: [
-    { label: 'Help Center', href: '/help-center' },
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms & Conditions', href: '/terms' },
-    { label: 'Delete My Account', href: '/delete-account' },
-  ],
-}
 
 const socialLinks = [
   {
@@ -62,9 +42,31 @@ const socialLinks = [
 
 const BrandFooter = () => {
   const { isLoggedIn } = useAuth()
+  const { t } = useLang()
   const router = useRouter()
   const [guestModalOpen, setGuestModalOpen] = useState(false)
   const [pendingHref, setPendingHref] = useState<string | null>(null)
+
+  const footerLinks = {
+    [t.footer.explore]: [
+      { label: t.footer.destinations, href: '/destinations' },
+      { label: t.footer.events, href: '/events' },
+      { label: t.footer.busRoutes, href: '/bus-routes' },
+      { label: t.footer.gallery, href: '/gallery' },
+    ],
+    [t.footer.company]: [
+      { label: t.footer.about, href: '/about' },
+      { label: t.footer.addPlace, href: '/add-place' },
+      { label: t.footer.advertise, href: '/advertise' },
+      { label: t.footer.contact, href: '/contact' },
+    ],
+    [t.footer.support]: [
+      { label: t.footer.helpCenter, href: '/help-center' },
+      { label: t.footer.privacy, href: '/privacy' },
+      { label: t.footer.terms, href: '/terms' },
+      { label: t.footer.deleteAccount, href: '/delete-account' },
+    ],
+  }
 
   const handleLinkClick = (href: string) => (e: React.MouseEvent) => {
     if (protectedHrefs.has(href) && !isLoggedIn) {
@@ -90,8 +92,7 @@ const BrandFooter = () => {
             <div className="col-span-2 lg:col-span-3">
               <Logo className="w-28" />
               <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                Your ultimate guide to exploring the pristine beauty of Maharashtra&apos;s Tourkokan coast. Available on
-                Google Play — iOS coming soon.
+                {t.footer.tagline}
               </p>
 
               {/* Social links */}
@@ -122,7 +123,7 @@ const BrandFooter = () => {
                   Google Play
                 </Link>
                 <div className="flex items-center gap-1.5 rounded-lg bg-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-500 dark:bg-neutral-700 dark:text-neutral-400">
-                  iOS — Coming Soon
+                  {t.footer.iosSoon}
                 </div>
               </div>
             </div>
@@ -153,10 +154,10 @@ const BrandFooter = () => {
           {/* Bottom bar */}
           <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-neutral-100 pt-8 sm:flex-row dark:border-neutral-800">
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
-              © {new Date().getFullYear()} Tourkokan. All rights reserved.
+              © {new Date().getFullYear()} Tourkokan. {t.footer.rights}
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Made with ❤️ for Tourkokan travellers
+              {t.footer.madeWith}
             </p>
           </div>
         </div>

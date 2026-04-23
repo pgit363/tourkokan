@@ -2,6 +2,7 @@
 
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { PlayStoreBadge } from '@/components/brand/AppBadges'
+import { useLang } from '@/context/LanguageContext'
 
 interface DownloadAppModalProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ interface DownloadAppModalProps {
 }
 
 const DownloadAppModal = ({ isOpen, onClose, title = 'Get More Details' }: DownloadAppModalProps) => {
+  const { t } = useLang()
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       {/* Backdrop — clicking it closes the modal */}
@@ -46,12 +48,12 @@ const DownloadAppModal = ({ isOpen, onClose, title = 'Get More Details' }: Downl
           </DialogTitle>
 
           <p className="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400">
-            Download the Tourkokan app to explore full details, photos, reviews, and more — for free.
+            {t.auth.downloadSubtext}
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">
             <PlayStoreBadge width={180} />
-            <p className="text-xs text-neutral-400">iOS version coming soon</p>
+            <p className="text-xs text-neutral-400">{t.auth.iosSoon}</p>
           </div>
         </DialogPanel>
       </div>

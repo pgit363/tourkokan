@@ -2,6 +2,7 @@
 
 import { ApiError, sitesApi, categoriesApi, ftpUrl, Site, Category } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
+import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
@@ -98,7 +99,9 @@ function LimitedSelect({
 // ── DestinationCard ────────────────────────────────────────────────────────────
 
 const DestinationCard = ({ site }: { site: Site }) => {
+  const { lang } = useLang()
   const imgUrl = ftpUrl(site.image)
+  const displayName = lang === 'mr' && site.mr_name ? site.mr_name : site.name
   return (
     <Link
       href={`/destinations/${site.id}`}
@@ -121,7 +124,7 @@ const DestinationCard = ({ site }: { site: Site }) => {
         )}
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-semibold text-neutral-900 dark:text-white">{site.name}</h3>
+        <h3 className="font-semibold text-neutral-900 dark:text-white">{displayName}</h3>
         {site.categories && site.categories.length > 0 && (
           <div className="mt-1 flex flex-wrap gap-1">
             {site.categories.slice(0, 2).map((c) => (
@@ -154,6 +157,7 @@ const DestinationCard = ({ site }: { site: Site }) => {
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function DestinationsPage() {
+  const { t, lang } = useLang()
   const [sites, setSites] = useState<Site[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
@@ -234,15 +238,15 @@ export default function DestinationsPage() {
   return (
     <div className="container py-16 lg:py-20">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Explore Kokan Destinations</h1>
-        <p className="mt-2 text-neutral-500 dark:text-neutral-400">Discover beaches, forts, and hidden gems along the Kokan coast.</p>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.destinations.pageTitle}</h1>
+        <p className="mt-2 text-neutral-500 dark:text-neutral-400">{t.destinations.pageSubtitle}</p>
       </div>
 
       {/* Filters */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center">
         <input
           type="search"
-          placeholder="Search destinations…"
+          placeholder={t.destinations.searchPlaceholder}
           value={search}
           onChange={(e) => {
             if (e.target.value.length >= 3) { setShowDownloadModal(true); return }
@@ -255,7 +259,7 @@ export default function DestinationsPage() {
           options={parentOptions}
           value={selectedParent}
           onChange={handleParentChange}
-          placeholder="All categories"
+          placeholder={t.destinations.allCategories}
           limit={3}
           onLimitReached={() => setShowDownloadModal(true)}
         />
@@ -264,7 +268,7 @@ export default function DestinationsPage() {
           options={subOptions}
           value={selectedCategory}
           onChange={setSelectedCategory}
-          placeholder="Sub-category *"
+          placeholder={t.destinations.subCategory}
           disabled={!selectedParent || subOptions.length === 0}
           limit={3}
           onLimitReached={() => setShowDownloadModal(true)}
@@ -279,7 +283,7 @@ export default function DestinationsPage() {
 
       {/* Grid */}
       {sites.length === 0 && !loading ? (
-        <div className="py-20 text-center text-neutral-400">No destinations found.</div>
+        <div className="py-20 text-center text-neutral-400">{t.destinations.noDestinations}</div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {sites.map((site) => (
@@ -300,7 +304,7 @@ export default function DestinationsPage() {
             onClick={handleLoadMore}
             className="rounded-xl border border-neutral-200 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
-            Load more
+            {t.common.loadMore}
           </button>
         </div>
       )}

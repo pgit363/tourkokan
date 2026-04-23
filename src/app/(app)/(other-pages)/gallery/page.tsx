@@ -2,6 +2,7 @@
 
 import { ApiError, ftpUrl, galleryApi, GalleryItem } from '@/lib/api'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
+import { useLang } from '@/context/LanguageContext'
 import { useEffect, useState } from 'react'
 
 const GalleryCard = ({ item, onClick }: { item: GalleryItem; onClick: () => void }) => {
@@ -33,6 +34,7 @@ const GalleryCard = ({ item, onClick }: { item: GalleryItem; onClick: () => void
 }
 
 export default function GalleryPage() {
+  const { t } = useLang()
   const [items, setItems] = useState<GalleryItem[]>([])
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -90,15 +92,15 @@ export default function GalleryPage() {
   return (
     <div className="container py-16 lg:py-20">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Photo Gallery</h1>
-        <p className="mt-2 text-neutral-500 dark:text-neutral-400">Stunning visuals from across the Kokan coast.</p>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.gallery.pageTitle}</h1>
+        <p className="mt-2 text-neutral-500 dark:text-neutral-400">{t.gallery.pageSubtitle}</p>
       </div>
 
       {/* Filters */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
         <input
           type="search"
-          placeholder="Search photos…"
+          placeholder={t.gallery.searchPlaceholder}
           value={search}
           onChange={(e) => {
             if (e.target.value.length >= 2) { setShowDownloadModal(true); return }
@@ -115,7 +117,7 @@ export default function GalleryPage() {
       )}
 
       {items.length === 0 && !loading ? (
-        <div className="py-20 text-center text-neutral-400">No photos found.</div>
+        <div className="py-20 text-center text-neutral-400">{t.gallery.noPhotos}</div>
       ) : (
         <div className="columns-2 gap-4 sm:columns-3 md:columns-4 lg:columns-5">
           {items.map((item) => (
@@ -138,7 +140,7 @@ export default function GalleryPage() {
             onClick={handleLoadMore}
             className="rounded-xl border border-neutral-200 bg-white px-6 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
-            Load more
+            {t.common.loadMore}
           </button>
         </div>
       )}

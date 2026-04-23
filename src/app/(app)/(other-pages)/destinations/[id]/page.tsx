@@ -2,6 +2,7 @@
 
 import { ApiError, commentsApi, Comment, ftpUrl, ratingsApi, sitesApi, Site } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import { useLang } from '@/context/LanguageContext'
 import DownloadAppModal from '@/components/brand/DownloadAppModal'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -10,6 +11,7 @@ import { useEffect, useState } from 'react'
 export default function DestinationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { isLoggedIn, user } = useAuth()
+  const { t, lang } = useLang()
   const isGuest = user?.isGuest === true || (user?.isGuest as unknown) === 'true'
 
   const [site, setSite] = useState<Site | null>(null)
@@ -75,8 +77,8 @@ export default function DestinationDetailPage() {
   if (error || !site) {
     return (
       <div className="container py-20 text-center text-neutral-500">
-        <p>{error || 'Destination not found.'}</p>
-        <Link href="/destinations" className="mt-4 inline-block text-primary-600 underline">Back to destinations</Link>
+        <p>{error || (lang === 'mr' ? 'ठिकाण सापडले नाही.' : 'Destination not found.')}</p>
+        <Link href="/destinations" className="mt-4 inline-block text-primary-600 underline">{t.destinations.backToDestinations}</Link>
       </div>
     )
   }
@@ -99,12 +101,12 @@ export default function DestinationDetailPage() {
         <div className="lg:col-span-2">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{site.name}</h1>
+              <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">{lang === 'mr' && site.mr_name ? site.mr_name : site.name}</h1>
               {site.categories && site.categories.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {site.categories.map((c, i) => (
                     <span key={`${c.id}-${i}`} className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
-                      {c.name}
+                      {lang === 'mr' && c.mr_name ? c.mr_name : c.name}
                     </span>
                   ))}
                 </div>
@@ -125,7 +127,7 @@ export default function DestinationDetailPage() {
           {/* Gallery preview */}
           {(site as any).gallery && (site as any).gallery.length > 0 && (
             <div className="mt-8">
-              <h2 className="mb-4 text-xl font-semibold text-neutral-900 dark:text-white">Photos</h2>
+              <h2 className="mb-4 text-xl font-semibold text-neutral-900 dark:text-white">{t.destinations.photosLabel}</h2>
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {(site as any).gallery.slice(0, 8).map((g: any, i: number) => (
                   <div key={g.id ?? i} className="aspect-square overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-700">
@@ -141,7 +143,7 @@ export default function DestinationDetailPage() {
           {/* Rate this place */}
           {isLoggedIn && (
             <div className="mt-8">
-              <h2 className="mb-3 text-xl font-semibold text-neutral-900 dark:text-white">Rate this place</h2>
+              <h2 className="mb-3 text-xl font-semibold text-neutral-900 dark:text-white">{t.destinations.rateThisPlace}</h2>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -163,14 +165,14 @@ export default function DestinationDetailPage() {
           {/* Comments */}
           <div className="mt-10">
             <h2 className="mb-6 text-xl font-semibold text-neutral-900 dark:text-white">
-              Reviews ({site.comment_count ?? comments.length})
+              {t.common.reviews} ({site.comment_count ?? comments.length})
             </h2>
 
             {isLoggedIn ? (
               <form onSubmit={handleComment} className="mb-8 flex gap-3">
                 <input
                   type="text"
-                  placeholder="Write a comment…"
+                  placeholder={t.destinations.writeComment}
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="flex-1 rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
@@ -180,12 +182,12 @@ export default function DestinationDetailPage() {
                   disabled={commentLoading || !newComment.trim()}
                   className="rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700 disabled:opacity-50"
                 >
-                  {commentLoading ? '…' : 'Post'}
+                  {commentLoading ? '…' : t.common.post}
                 </button>
               </form>
             ) : (
               <p className="mb-6 text-sm text-neutral-500">
-                <Link href="/login" className="font-medium text-primary-600 underline">Sign in</Link> to leave a review.
+                <Link href="/login" className="font-medium text-primary-600 underline">{t.common.signIn}</Link> {t.destinations.signInToReview}
               </p>
             )}
 
@@ -205,7 +207,7 @@ export default function DestinationDetailPage() {
                 </div>
               ))}
               {comments.length === 0 && (
-                <p className="text-sm text-neutral-400">No reviews yet. Be the first!</p>
+                <p className="text-sm text-neutral-400">{t.destinations.noReviews}</p>
               )}
             </div>
           </div>
@@ -215,23 +217,23 @@ export default function DestinationDetailPage() {
         <div className="space-y-6 lg:col-span-1">
           {/* Stats */}
           <div className="rounded-2xl border border-neutral-100 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-            <h3 className="mb-4 font-semibold text-neutral-900 dark:text-white">Quick Info</h3>
+            <h3 className="mb-4 font-semibold text-neutral-900 dark:text-white">{t.destinations.quickInfo}</h3>
             <dl className="space-y-3 text-sm">
               {site.gallery_count != null && (
                 <div className="flex justify-between">
-                  <dt className="text-neutral-500">Photos</dt>
+                  <dt className="text-neutral-500">{t.destinations.photosLabel}</dt>
                   <dd className="font-medium text-neutral-900 dark:text-white">{site.gallery_count}</dd>
                 </div>
               )}
               {site.comment_count != null && (
                 <div className="flex justify-between">
-                  <dt className="text-neutral-500">Reviews</dt>
+                  <dt className="text-neutral-500">{t.common.reviews}</dt>
                   <dd className="font-medium text-neutral-900 dark:text-white">{site.comment_count}</dd>
                 </div>
               )}
               {site.rating_avg_rate != null && (
                 <div className="flex justify-between">
-                  <dt className="text-neutral-500">Rating</dt>
+                  <dt className="text-neutral-500">{t.common.rating}</dt>
                   <dd className="font-medium text-amber-500">★ {Number(site.rating_avg_rate).toFixed(1)} / 5</dd>
                 </div>
               )}
@@ -242,7 +244,7 @@ export default function DestinationDetailPage() {
             href="/destinations"
             className="block rounded-2xl border border-neutral-100 bg-white px-6 py-4 text-center text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
           >
-            ← Back to destinations
+            {t.destinations.backToDestinations}
           </Link>
         </div>
       </div>
