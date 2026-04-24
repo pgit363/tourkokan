@@ -86,7 +86,7 @@ const HeroSection = () => {
             </div>
 
             {/* Floating badge — destinations */}
-            <div className="absolute right-0 top-32 z-20 flex translate-x-1/2 items-center gap-2 rounded-2xl bg-green-500 px-3 py-2 shadow-xl">
+            <div className="absolute right-0 top-32 z-20 hidden translate-x-1/2 items-center gap-2 rounded-2xl bg-green-500 px-3 py-2 shadow-xl sm:flex">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
                 <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -99,7 +99,7 @@ const HeroSection = () => {
             </div>
 
             {/* Floating badge — rating */}
-            <div className="absolute left-0 bottom-24 z-20 flex -translate-x-1/2 items-center gap-2 rounded-2xl bg-primary-600 px-3 py-2 shadow-xl">
+            <div className="absolute left-0 bottom-24 z-20 hidden -translate-x-1/2 items-center gap-2 rounded-2xl bg-primary-600 px-3 py-2 shadow-xl sm:flex">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
                 <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
