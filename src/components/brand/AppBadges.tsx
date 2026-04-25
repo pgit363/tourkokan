@@ -9,7 +9,6 @@ interface PlayStoreBadgeProps {
   width?: number
   className?: string
 }
-
 export const PlayStoreBadge = ({ width = 160, className = '' }: PlayStoreBadgeProps) => (
   <Link
     href={PLAY_STORE_URL}

@@ -5,7 +5,7 @@ import { useLang } from '@/context/LanguageContext'
 import { ArrowRightIcon, ArrowLeftIcon, MapPinIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ImageAdd02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { AdvancedMarker, Map } from '@vis.gl/react-google-maps'
+import { APIProvider, AdvancedMarker, Map } from '@vis.gl/react-google-maps'
 import { useEffect, useRef, useState } from 'react'
 
 const TOTAL_STEPS = 4
@@ -164,6 +164,7 @@ const MapPickerModal = ({
 
         {/* Map */}
         <div className="h-80 w-full">
+          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ''}>
           <Map
             defaultCenter={initialPos ?? KOKAN_CENTER}
             defaultZoom={11}
@@ -182,6 +183,7 @@ const MapPickerModal = ({
               }}
             />
           </Map>
+          </APIProvider>
         </div>
 
         {/* Footer */}

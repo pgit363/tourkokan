@@ -11,7 +11,7 @@ import { ListingType } from '@/type'
 import T from '@/utils/getT'
 import { Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
-import { AdvancedMarker, ControlPosition, Map, MapControl } from '@vis.gl/react-google-maps'
+import { APIProvider, AdvancedMarker, ControlPosition, Map, MapControl } from '@vis.gl/react-google-maps'
 import { Fragment, useEffect, useState } from 'react'
 
 interface Props {
@@ -35,6 +35,7 @@ const MapFixedSection = ({ closeButtonHref, currentHoverID: selectedID, listings
   return (
     <div className="fixed inset-0 top-0 z-40 flex-1/2 xl:static xl:z-0">
       <div className="fixed start-0 top-0 size-full overflow-hidden xl:sticky xl:top-0 xl:h-screen">
+        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ''}>
         <Map
           style={{
             width: '100%',
@@ -83,6 +84,7 @@ const MapFixedSection = ({ closeButtonHref, currentHoverID: selectedID, listings
             </AdvancedMarker>
           ))}
         </Map>
+        </APIProvider>
         <div className="absolute top-3 left-3">
           <ButtonClose color="white" href={closeButtonHref} />
         </div>

@@ -6,7 +6,7 @@ import Input from '@/shared/Input'
 import Select from '@/shared/Select'
 import T from '@/utils/getT'
 import { MapPinIcon } from '@heroicons/react/24/outline'
-import { Map, Marker } from '@vis.gl/react-google-maps'
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps'
 import Form from 'next/form'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -84,6 +84,7 @@ const Page = () => {
           <div className="mt-4">
             <div className="aspect-w-5 aspect-h-7 sm:aspect-h-3">
               <div className="overflow-hidden rounded-xl">
+                <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? ''}>
                 <Map
                   style={{
                     width: '100%',
@@ -107,6 +108,7 @@ const Page = () => {
                     }}
                   />
                 </Map>
+                </APIProvider>
 
                 <input type="hidden" name="latMapPosition" value={mapPosition.lat} />
                 <input type="hidden" name="lngMapPosition" value={mapPosition.lng} />
