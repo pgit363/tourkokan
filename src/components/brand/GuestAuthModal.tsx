@@ -87,9 +87,14 @@ const GuestAuthModal = ({ isOpen, onClose, onSuccess }: GuestAuthModalProps) => 
             {loading ? t.common.loading : t.auth.continueAsGuest}
           </button>
 
-          <p className="mt-3 text-center text-xs text-neutral-400">
+          <a
+            href="https://play.google.com/store/apps/details?id=com.tourkokan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 block text-center text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+          >
             {t.auth.downloadApp}
-          </p>
+          </a>
         </DialogPanel>
       </div>
     </Dialog>
