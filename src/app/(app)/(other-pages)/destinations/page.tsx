@@ -117,11 +117,6 @@ const DestinationCard = ({ site }: { site: Site }) => {
         ) : (
           <div className="flex h-full w-full items-center justify-center text-4xl">🏖️</div>
         )}
-        {site.is_favorite && (
-          <span className="absolute top-3 right-3 rounded-full bg-red-500 px-2 py-0.5 text-xs font-medium text-white">
-            ♥ Saved
-          </span>
-        )}
       </div>
       <div className="flex flex-1 flex-col p-4">
         <h3 className="font-semibold text-neutral-900 dark:text-white">{displayName}</h3>

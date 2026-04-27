@@ -1,7 +1,6 @@
 'use client'
 
 import { ApiError, Event, eventsApi } from '@/lib/api'
-import { useAuth } from '@/context/AuthContext'
 import { useLang } from '@/context/LanguageContext'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -22,77 +21,21 @@ function formatDate(dateStr?: string) {
 
 export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { isLoggedIn } = useAuth()
   const { t } = useLang()
 
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [liked, setLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(0)
-  const [going, setGoing] = useState(false)
-  const [goingCount, setGoingCount] = useState(0)
-  const [interested, setInterested] = useState(false)
-  const [interestedCount, setInterestedCount] = useState(0)
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
-
   useEffect(() => {
     if (!slug) return
     setLoading(true)
     eventsApi
       .get(slug)
-      .then((res) => {
-        setEvent(res.data)
-        setLiked(res.data.user_interaction?.has_liked ?? false)
-        setLikeCount(res.data.like_count ?? 0)
-        setGoing(res.data.user_interaction?.is_going ?? false)
-        setGoingCount(res.data.going_count ?? 0)
-        setInterested(res.data.user_interaction?.is_interested ?? false)
-        setInterestedCount(res.data.interested_count ?? 0)
-      })
+      .then((res) => setEvent(res.data))
       .catch((err) => setError(err instanceof ApiError ? err.message : t.events.notFound))
       .finally(() => setLoading(false))
   }, [slug])
-
-  const handleLike = async () => {
-    if (!isLoggedIn || !event || actionLoading) return
-    setActionLoading('like')
-    try {
-      const res = await eventsApi.like(event.id)
-      setLiked(res.data.liked)
-      setLikeCount(res.data.like_count)
-    } catch {
-    } finally {
-      setActionLoading(null)
-    }
-  }
-
-  const handleGoing = async () => {
-    if (!isLoggedIn || !event || actionLoading) return
-    setActionLoading('going')
-    try {
-      const res = await eventsApi.going(event.id)
-      setGoing(res.data.is_going)
-      setGoingCount(res.data.going_count)
-    } catch {
-    } finally {
-      setActionLoading(null)
-    }
-  }
-
-  const handleInterested = async () => {
-    if (!isLoggedIn || !event || actionLoading) return
-    setActionLoading('interested')
-    try {
-      const res = await eventsApi.interested(event.id)
-      setInterested(res.data.is_interested)
-      setInterestedCount(res.data.interested_count)
-    } catch {
-    } finally {
-      setActionLoading(null)
-    }
-  }
 
   if (loading) {
     return (
@@ -152,53 +95,15 @@ export default function EventDetailPage() {
             </div>
           )}
 
-          {/* Interaction buttons */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              onClick={handleLike}
-              disabled={!isLoggedIn || actionLoading === 'like'}
-              className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition ${
-                liked
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
-              } disabled:opacity-50`}
-            >
-              ♥ {liked ? t.events.liked : t.events.like}
-              {likeCount > 0 && <span className="ml-1 text-xs opacity-75">({likeCount})</span>}
-            </button>
-
-            <button
-              onClick={handleGoing}
-              disabled={!isLoggedIn || actionLoading === 'going'}
-              className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition ${
-                going
-                  ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
-              } disabled:opacity-50`}
-            >
-              ✓ {going ? t.events.going : t.events.imGoing}
-              {goingCount > 0 && <span className="ml-1 text-xs opacity-75">({goingCount})</span>}
-            </button>
-
-            <button
-              onClick={handleInterested}
-              disabled={!isLoggedIn || actionLoading === 'interested'}
-              className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium transition ${
-                interested
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
-                  : 'border border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
-              } disabled:opacity-50`}
-            >
-              ⭐ {t.events.interested}
-              {interestedCount > 0 && <span className="ml-1 text-xs opacity-75">({interestedCount})</span>}
-            </button>
-          </div>
-
-          {!isLoggedIn && (
-            <p className="mt-3 text-xs text-neutral-400">
-              <Link href="/login" className="text-primary-600 underline">{t.common.signIn}</Link> {t.events.signInToInteract}
+          {/* App-only actions */}
+          <div className="mt-8 rounded-2xl border border-neutral-100 bg-neutral-50 px-5 py-4 dark:border-neutral-700 dark:bg-neutral-800/50">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              ♥ Like, ✓ Going, ⭐ Interested — available in the{' '}
+              <a href="https://play.google.com/store/apps/details?id=com.tourkokan" target="_blank" rel="noopener noreferrer" className="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                Tourkokan app
+              </a>.
             </p>
-          )}
+          </div>
         </div>
 
         {/* Sidebar */}
