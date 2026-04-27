@@ -25,7 +25,7 @@ export default async function DownloadPage({ searchParams }: { searchParams?: Pr
     },
   }
 
-  const content = (reason && messages[reason]) ?? {
+  const content = (reason && messages[reason]) || {
     heading: 'Get the Full Experience',
     sub: 'Download the Tourkokan app to explore beaches, forts, routes, and hidden gems of the Konkan coast.',
   }
