@@ -10,7 +10,7 @@ const faqs = [
     items: [
       {
         q: 'What is Tourkokan?',
-        a: 'Tourkokan is your guide to exploring the Tourkokan coast of Maharashtra. We list beaches, forts, waterfalls, temples, and local events to help travellers discover hidden gems along the coast.',
+        a: 'Tourkokan is your guide to exploring the Konkan coast of Maharashtra. We list beaches, forts, waterfalls, temples, and local events to help travellers discover hidden gems along the coast.',
       },
       {
         q: 'Do I need an account to browse destinations?',
@@ -91,7 +91,100 @@ const faqs = [
       },
       {
         q: 'What types of businesses can advertise?',
-        a: 'Hotels, homestays, restaurants, boat tours, water sports operators, local experiences, and any business serving Tourkokan travellers can advertise on Tourkokan.',
+        a: 'Hotels, homestays, restaurants, boat tours, water sports operators, local experiences, and any business serving Konkan travellers can advertise on Tourkokan.',
+      },
+    ],
+  },
+]
+
+const mrFaqs = [
+  {
+    category: 'सुरुवात करूया',
+    items: [
+      {
+        q: 'Tourkokan म्हणजे काय?',
+        a: 'Tourkokan हे महाराष्ट्राच्या कोकण किनारपट्टीची सफर घडवून आणणारे तुमचे हक्काचे गाईड आहे. इथले अथांग किनारे, ऐतिहासिक किल्ले, मनमोहक धबधबे, प्राचीन मंदिरे आणि स्थानिक उत्सवांची इत्थंभूत माहिती देऊन कोकणचे दडलेले सौंदर्य उलगडण्यास आम्ही मदत करतो.',
+      },
+      {
+        q: 'माहिती पाहण्यासाठी खाते (Account) असणे आवश्यक आहे का?',
+        a: 'Tourkokan चे मुख्यपृष्ठ पाहण्यासाठी कोणत्याही खात्याची गरज नाही. पण इथली ठिकाणे, कार्यक्रम, चित्रदालन आणि एसटीचे वेळापत्रक सविस्तर पाहण्यासाठी तुम्हाला मोफत "गेस्ट अकाउंट" लागेल — हे फक्त एका क्लिकवर बनते आणि यासाठी कोणत्याही पासवर्डची गरज नाही.',
+      },
+      {
+        q: 'Tourkokan वापरण्यासाठी पैसे लागतात का?',
+        a: 'होय, Tourkokan पर्यटकांसाठी अगदी मोफत आहे! इथली सर्व माहिती, ठिकाणे आणि मार्ग तुम्ही कोणत्याही शुल्काशिवाय पाहू शकता.',
+      },
+    ],
+  },
+  {
+    category: 'गेस्ट अकाउंट (Guest Account)',
+    items: [
+      {
+        q: 'गेस्ट अकाउंट म्हणजे काय?',
+        a: 'गेस्ट अकाउंट हे तुमच्यासाठी आपोआप तयार झालेले एक तात्पुरते खाते आहे. यामुळे तुम्हाला ईमेल आयडी न देताही माहिती पाहता येते आणि तुमची आवडती ठिकाणे जतन (Save) करता येतात.',
+      },
+      {
+        q: 'गेस्ट अकाउंट किती वेळ चालते?',
+        a: 'गेस्ट अकाउंट तुम्ही साइन इन केल्यापासून फक्त २४ तासांसाठी वैध असते. त्यानंतर तुम्ही एका क्लिकवर सहज नवीन गेस्ट अकाउंट बनवू शकता.',
+      },
+      {
+        q: 'गेस्ट अकाउंटवरून कायमस्वरूपी खाते बनवता येते का?',
+        a: 'होय! पण कायमस्वरूपी खाते बनवण्यासाठी तुम्हाला आमचे Tourkokan अ‍ॅप डाउनलोड करावे लागेल. Google Play वरून अ‍ॅप डाउनलोड करा आणि ईमेलद्वारे नोंदणी करून सर्व सुविधांचा लाभ घ्या.',
+      },
+    ],
+  },
+  {
+    category: 'ठिकाणे आणि पर्यटन स्थळे',
+    items: [
+      {
+        q: 'एखादा विशिष्ट किनारा किंवा किल्ला कसा शोधायचा?',
+        a: '"ठिकाणे" (Destinations) विभागात जाऊन सर्च बारमध्ये तुम्हाला हवे असलेले नाव टाईप करा. तुम्ही समुद्रकिनारा, किल्ला किंवा धबधबा अशा श्रेणी (Categories) निवडूनही शोध घेऊ शकता.',
+      },
+      {
+        q: 'आवडलेली ठिकाणे जतन (Save) कशी करायची?',
+        a: 'कोणत्याही ठिकाणाच्या माहितीवर असलेल्या "हार्ट" (Heart) आयकॉनवर क्लिक करा. तुमची सर्व आवडती ठिकाणे "माझे खाते" मधील "जतन केलेली ठिकाणे" या विभागात सेव्ह होतील.',
+      },
+      {
+        q: 'अ‍ॅपवर नसलेले एखादे नवीन ठिकाण मी सुचवू शकतो का?',
+        a: 'नक्कीच! तुम्ही "नवीन ठिकाण जोडा" या पर्यायावर जाऊन नवीन स्थळाची माहिती देऊ शकता. आमची टीम माहिती तपासून ते ठिकाण अ‍ॅपवर प्रकाशित करेल.',
+      },
+    ],
+  },
+  {
+    category: 'एसटी वेळापत्रक आणि मार्ग',
+    items: [
+      {
+        q: 'दोन ठिकाणांमधील बस मार्ग कसा शोधायचा?',
+        a: 'आमच्या "बस मार्ग" विभागात जा. तिथे "येथून" (From) आणि "येथे" (To) मध्ये तुमची ठिकाणे निवडा आणि शोधा बटणावर क्लिक करा.',
+      },
+      {
+        q: 'येथील एसटीचे वेळापत्रक अचूक असते का?',
+        a: 'आम्ही वेळापत्रक शक्य तितके अचूक ठेवण्याचा प्रयत्न करतो. तरीही, एसटीच्या वेळा बदलू शकतात, त्यामुळे प्रवासाला निघण्यापूर्वी स्थानिक एसटी स्टँडवर वेळेची खात्री करून घेणे केव्हाही उत्तम.',
+      },
+    ],
+  },
+  {
+    category: 'सण, उत्सव आणि कार्यक्रम',
+    items: [
+      {
+        q: 'कोकणातील आगामी सण कसे शोधायचे?',
+        a: '"कार्यक्रम" पानावर जाऊन तुम्ही आगामी सण आणि जत्रा शोधू शकता. कोकणातील सर्वात मोठ्या उत्सवांसाठी "खास आकर्षण" (Featured) हा फिल्टर वापरा किंवा नाव आणि ठिकाणानुसार शोध घ्या.',
+      },
+      {
+        q: 'एखाद्या स्थानिक कार्यक्रमाची माहिती अ‍ॅपवर कशी द्यायची?',
+        a: 'सध्या तुम्ही Tourkokan अ‍ॅपवरून किंवा आमच्या "संपर्क करा" पानावरून आम्हाला मेसेज पाठवून कोणत्याही कार्यक्रमाची माहिती देऊ शकता.',
+      },
+    ],
+  },
+  {
+    category: 'जाहिरात',
+    items: [
+      {
+        q: 'Tourkokan वर माझ्या व्यवसायाची जाहिरात कशी करायची?',
+        a: 'जाहिरातींचे दर आणि पॅकेजेस पाहण्यासाठी आमच्या "जाहिरात करा" पानावर जा. तिथे असलेला फॉर्म भरून पाठवा, आमची टीम २४ तासांत तुमच्याशी संपर्क साधेल.',
+      },
+      {
+        q: 'कोणत्या प्रकारचे व्यवसाय जाहिरात करू शकतात?',
+        a: 'हॉटेल्स, होमस्टे, रेस्टॉरंट्स, खानावळी, बोटिंग आणि वॉटर स्पोर्ट्स यांसारखे कोकणात पर्यटकांना सेवा देणारे कोणतेही व्यवसाय आमच्यासोबत जाहिरात करू शकतात.',
       },
     ],
   },
@@ -121,10 +214,11 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
 }
 
 export default function HelpCenterPage() {
-  const { t } = useLang()
-  const [activeCategory, setActiveCategory] = useState('Getting Started')
+  const { t, lang } = useLang()
+  const [activeIndex, setActiveIndex] = useState(0)
 
-  const current = faqs.find((f) => f.category === activeCategory)
+  const faqData = lang === 'mr' ? mrFaqs : faqs
+  const current = faqData[activeIndex]
 
   return (
     <div className="container py-16 lg:py-20">
@@ -138,12 +232,12 @@ export default function HelpCenterPage() {
       <div className="mx-auto max-w-4xl">
         {/* Category tabs */}
         <div className="mb-8 flex flex-wrap gap-2">
-          {faqs.map((section) => (
+          {faqData.map((section, i) => (
             <button
-              key={section.category}
-              onClick={() => setActiveCategory(section.category)}
+              key={i}
+              onClick={() => setActiveIndex(i)}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                activeCategory === section.category
+                activeIndex === i
                   ? 'bg-primary-600 text-white'
                   : 'border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
               }`}
