@@ -27,12 +27,10 @@ jobs:
           NEXT_PUBLIC_FTP_PATH: https://tourkokan-412490161095-eu-north-1-an.s3.eu-north-1.amazonaws.com/
           NEXT_PUBLIC_GOOGLE_MAP_API_KEY: AIzaSyArluwc4abyz8Uxuwqh7WZxLWjRGGgV9K0
       - name: Deploy to Cloudflare (tourkokan-test)
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: e56e1812faccec3009583f5067b53231
-          wranglerVersion: "4.84.0"
-          command: deploy --name tourkokan-test
+        run: npx wrangler deploy --name tourkokan-test
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: e56e1812faccec3009583f5067b53231
 
   deploy-prod:
     if: github.ref == 'refs/heads/master'
@@ -51,9 +49,7 @@ jobs:
           NEXT_PUBLIC_FTP_PATH: https://tourkokan-412490161095-eu-north-1-an.s3.eu-north-1.amazonaws.com/
           NEXT_PUBLIC_GOOGLE_MAP_API_KEY: AIzaSyArluwc4abyz8Uxuwqh7WZxLWjRGGgV9K0
       - name: Deploy to Cloudflare (tourkokan)
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: e56e1812faccec3009583f5067b53231
-          wranglerVersion: "4.84.0"
-          command: deploy
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: e56e1812faccec3009583f5067b53231
