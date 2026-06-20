@@ -5,7 +5,8 @@
  */
 
 export const API_BASE = '/api/proxy'
-export const FTP_PATH = process.env.NEXT_PUBLIC_FTP_PATH ?? 'https://ftp.dev.tourkokan.com/'
+export const FTP_PATH =
+  process.env.NEXT_PUBLIC_FTP_PATH ?? 'https://tourkokan-412490161095-eu-north-1-an.s3.eu-north-1.amazonaws.com/'
 
 /** Prefix a relative image path with the FTP base URL */
 export function ftpUrl(path?: string | null): string | null {

@@ -11,6 +11,8 @@
     "build:dev": "NEXT_PUBLIC_API_URL=https://probytesolution.in next build",
     "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy:test": "NEXT_PUBLIC_API_URL=https://api-test.tourkokan.com NEXT_PUBLIC_FTP_PATH=https://tourkokan-412490161095-eu-north-1-an.s3.eu-north-1.amazonaws.com/ opennextjs-cloudflare build && npx wrangler deploy --name tourkokan-test",
+    "deploy:prod": "NEXT_PUBLIC_API_URL=https://api.tourkokan.com NEXT_PUBLIC_FTP_PATH=https://tourkokan-412490161095-eu-north-1-an.s3.eu-north-1.amazonaws.com/ opennextjs-cloudflare build && npx wrangler deploy",
     "start": "next start",
     "lint": "next lint"
   },
