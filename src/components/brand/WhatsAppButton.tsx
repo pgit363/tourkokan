@@ -1,6 +1,6 @@
 'use client'
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '919876543210'
+const WA_NUMBER = process.env.NEXT_PUBLIC_WA_NUMBER ?? '918454029747'
 const WA_MESSAGE = encodeURIComponent('Hi Tourkokan! I have a question about Tourkokan travel.')
 
 const WhatsAppButton = () => {
