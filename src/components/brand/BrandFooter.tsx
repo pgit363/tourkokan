@@ -57,6 +57,7 @@ const BrandFooter = () => {
     [t.footer.company]: [
       { label: t.footer.about, href: '/about' },
       { label: t.footer.addPlace, href: '/download?reason=submit-place' },
+      { label: t.footer.listBusiness, href: '/subscription' },
       { label: t.footer.advertise, href: '/advertise' },
       { label: t.footer.contact, href: '/contact' },
     ],
@@ -112,7 +113,7 @@ const BrandFooter = () => {
               {/* App badges */}
               <div className="mt-6 flex items-center gap-2">
                 <Link
-                  href="https://play.google.com/store/apps/details?id=com.Tourkokan"
+                  href="https://play.google.com/store/apps/details?id=com.tourkokan"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-700 dark:bg-neutral-700"
