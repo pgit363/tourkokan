@@ -2,16 +2,17 @@ import Image from 'next/image'
 import Link from 'next/link'
 import googlePlayBadge from '@/images/googleplay.png'
 import appStoreBadge from '@/images/appstore.png'
-
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.tourkokan'
+import { playStoreUrl } from '@/lib/deeplinks'
 
 interface PlayStoreBadgeProps {
   width?: number
   className?: string
+  /** Overrides the plain store link — used by /invite to carry the referral code. */
+  href?: string
 }
-export const PlayStoreBadge = ({ width = 160, className = '' }: PlayStoreBadgeProps) => (
+export const PlayStoreBadge = ({ width = 160, className = '', href = playStoreUrl() }: PlayStoreBadgeProps) => (
   <Link
-    href={PLAY_STORE_URL}
+    href={href}
     target="_blank"
     rel="noopener noreferrer"
     className={`inline-block transition-transform hover:scale-105 ${className}`}

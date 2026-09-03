@@ -365,7 +365,9 @@ const AdvertisePage = () => {
   const [loadingPackages, setLoadingPackages] = useState(true)
   const [showAllPlacements, setShowAllPlacements] = useState<Record<number, boolean>>({})
 
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
+  // `website` is a honeypot: hidden from real users, silently dropped by the
+  // backend (config/spam.php) if a bot fills it in.
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '', website: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
@@ -426,7 +428,7 @@ const AdvertisePage = () => {
         setStatus('error')
       } else {
         setStatus('success')
-        setForm({ name: '', email: '', phone: '', message: '' })
+        setForm({ name: '', email: '', phone: '', message: '', website: '' })
         setFieldErrors({})
       }
     } catch {
@@ -648,6 +650,17 @@ const AdvertisePage = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Honeypot — hidden from humans; bots that fill it are dropped server-side */}
+                <input
+                  type="text"
+                  name="website"
+                  value={form.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] top-0 h-0 w-0 opacity-0"
+                />
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">

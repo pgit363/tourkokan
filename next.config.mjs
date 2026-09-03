@@ -8,6 +8,14 @@ const nextConfig = {
         source: '/api/proxy/:path*',
         destination: `${apiUrl}/api/:path*`,
       },
+      // Android App Links verification file. It has to be served from this
+      // exact path, as application/json, with no redirect in front of it —
+      // a 301/302 fails verification. This is an internal rewrite, so the
+      // response is a 200 at the original URL.
+      {
+        source: '/.well-known/assetlinks.json',
+        destination: '/api/well-known/assetlinks.json',
+      },
     ]
   },
   images: {
