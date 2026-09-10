@@ -24,16 +24,21 @@ export const ANDROID_PACKAGE_NAME = 'com.tourkokan'
  * open in the browser and nothing reports an error.
  */
 export const SHA256_CERT_FINGERPRINTS = [
-  // Upload key (android/app/tourkokan-release.keystore)
+  // Upload key (android/app/tourkokan-release.keystore) — matches release
+  // builds installed directly over USB for testing.
   '03:0D:2D:B4:8D:28:80:E8:0D:FC:10:D3:A6:B1:B4:3A:EA:B2:D6:0F:8E:53:EA:5B:05:93:21:61:9B:24:9A:53',
-  // TODO: add the Play App Signing SHA-256 — until it is here, links do not
-  // verify for anyone who installed the app from the Play Store.
+  // Play App Signing key (Play Console -> App signing) — matches every install
+  // from the Play Store, since Google re-signs the app with its own key.
+  '9A:E6:18:86:DB:11:21:39:CC:5A:1E:DA:42:F7:8B:BD:49:DF:DF:48:2C:82:45:32:E7:EE:F3:74:51:0F:C4:D1',
 ]
 
 /** The statement list served at /.well-known/assetlinks.json. */
 export const assetLinksStatements = () => [
   {
-    relation: ['delegate_permission/common.handle_all_urls'],
+    relation: [
+      'delegate_permission/common.handle_all_urls',
+      'delegate_permission/common.get_login_creds',
+    ],
     target: {
       namespace: 'android_app',
       package_name: ANDROID_PACKAGE_NAME,
