@@ -3,6 +3,7 @@ import FeaturesSection from '@/components/brand/FeaturesSection'
 import HeroSection from '@/components/brand/HeroSection'
 import HowItWorks from '@/components/brand/HowItWorks'
 import TestimonialsSection from '@/components/brand/TestimonialsSection'
+import VendorAcquireBanner from '@/components/brand/VendorAcquireBanner'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -31,6 +32,11 @@ export default function Page() {
       {/* Testimonials — User reviews */}
       <section id="testimonials">
         <TestimonialsSection />
+      </section>
+
+      {/* Vendor acquisition — list your business (M7) */}
+      <section id="for-businesses">
+        <VendorAcquireBanner />
       </section>
 
       {/* Download CTA */}
