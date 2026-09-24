@@ -89,7 +89,7 @@ export async function apiFetch<T = unknown>(path: string, options: FetchOptions 
         window.dispatchEvent(new Event('auth:unauthenticated'))
       }
     }
-    const error = new ApiError(message, res.status, err?.errors)
+    const error = new ApiError(message, res.status, err?.errors, data)
     throw error
   }
 
@@ -100,13 +100,16 @@ export class ApiError extends Error {
   status: number
   errors?: Record<string, string[]>
   isServerError: boolean
+  /** Raw response body — some endpoints put machine-readable detail in data (e.g. missing_profile_fields) */
+  body?: unknown
 
-  constructor(message: string, status: number, errors?: Record<string, string[]>) {
+  constructor(message: string, status: number, errors?: Record<string, string[]>, body?: unknown) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.errors = errors
     this.isServerError = status >= 500 || message === 'Server Error'
+    this.body = body
   }
 }
 
@@ -504,4 +507,69 @@ export interface LandingPageData {
   trending?: Site[]
   gallery?: GalleryItem[]
   blogs?: unknown[]
+}
+
+// ── Vendor Onboarding API (M5) ────────────────────────────────────────────────
+// The combined first-time wizard at /vendor/register. The backend guard admits
+// the combined endpoint only for users with zero sites and an X-App-Source: web
+// header — established vendors manage listings in the app.
+
+export interface BusinessCategory {
+  id: number
+  name: string
+  mr_name?: string | null
+  code: string
+  icon?: string | null
+  sub_categories?: BusinessCategory[]
+  subCategories?: BusinessCategory[]
+}
+
+export interface ProductCategoryOption {
+  id: number
+  name: string
+  mr_name?: string | null
+  code: string
+  booking_type?: string
+  has_attributes?: boolean
+}
+
+export const vendorApi = {
+  businessCategories: () =>
+    apiFetch<{ data: BusinessCategory[] }>('/v2/businessCategories', { method: 'POST', body: JSON.stringify({}) }),
+
+  /** Product categories reachable from chosen business categories — pre-site variant */
+  allowedProductCategories: (categoryIds: number[]) =>
+    apiFetch<{ data: ProductCategoryOption[] }>('/v2/allowedProductCategories', {
+      method: 'POST',
+      body: JSON.stringify({ category_ids: categoryIds }),
+    }),
+
+  parseMapUrl: (url: string) =>
+    apiFetch<{ data: { latitude: number; longitude: number } }>('/v2/parseMapUrl', {
+      method: 'POST',
+      body: JSON.stringify({ url }),
+    }),
+
+  /** The combined submission. FormData because it may carry image/logo/reg_doc files. */
+  onboard: (form: FormData) =>
+    apiFetch<{ data: { site: Site; product?: unknown; role_request?: unknown } }>('/v2/vendorOnboard', {
+      method: 'POST',
+      headers: { 'X-App-Source': 'web' },
+      body: form,
+    }),
+
+  /** Fill exactly the missing contact fields when the gate rejects the request */
+  updateProfile: (payload: { email?: string; mobile?: string }) =>
+    apiFetch<{ success: boolean; message?: unknown; data?: User }>('/v2/updateProfile', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  /** Google Identity Services credential → backend session (JWT) */
+  googleAuth: (idToken: string, email?: string) =>
+    apiFetch<{ data: AuthResponse }>('/v2/googleAuth', {
+      method: 'POST',
+      body: JSON.stringify({ token: idToken, userEmail: email, language: 'en' }),
+      skipAuth: true,
+    }),
 }
