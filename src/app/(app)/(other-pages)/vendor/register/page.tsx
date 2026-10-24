@@ -660,7 +660,10 @@ function ProductAttributeFields({
               <select
                 value={typeof value === 'string' ? value : ''}
                 onChange={(e) => onChange(key, e.target.value)}
-                className="block w-full rounded-2xl border-neutral-200 bg-white text-sm focus:border-primary-300 dark:border-neutral-700 dark:bg-neutral-900"
+                // Matches Input. color-scheme matters: the dropdown list is drawn
+                // by the OS, so without it a light page shows a dark list on a
+                // machine set to dark mode.
+                className="block h-11 w-full rounded-2xl border-neutral-200 bg-white px-4 text-sm font-normal text-neutral-900 [color-scheme:light] focus:border-primary-300 focus:ring-3 focus:ring-primary-200/50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:[color-scheme:dark] dark:focus:ring-primary-600/25"
               >
                 <option value="">—</option>
                 {(spec.options ?? []).map((opt) => (
