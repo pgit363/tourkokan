@@ -548,6 +548,19 @@ export interface BusinessCategory {
   subCategories?: BusinessCategory[]
 }
 
+/**
+ * One entry of a product category's `attribute_schema` — the backend validates
+ * submitted attributes against this, so the form has to be built from it.
+ */
+export interface ProductAttributeSpec {
+  type: 'string' | 'text' | 'int' | 'decimal' | 'bool' | 'enum' | 'multi' | 'date' | 'time'
+  label: string
+  required?: boolean
+  min?: number
+  max?: number
+  options?: string[]
+}
+
 export interface ProductCategoryOption {
   id: number
   name: string
@@ -555,6 +568,8 @@ export interface ProductCategoryOption {
   code: string
   booking_type?: string
   has_attributes?: boolean
+  /** Keyed by attribute name, e.g. { duration_min: { type: 'int', … } } */
+  attribute_schema?: Record<string, ProductAttributeSpec> | null
 }
 
 export const vendorApi = {

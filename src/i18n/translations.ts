@@ -399,7 +399,7 @@ const en = {
     regTypeNone: 'Skip for now',
     regNumber: 'Registration number',
     regDoc: 'Certificate (photo or PDF, optional)',
-    consentPlaceholder: '[PLACEHOLDER \u2014 replace with lawyer-approved DPDP consent text before release] I consent to Tourkokan storing my business registration details for verification.',
+    consentPlaceholder: 'I consent to Tourkokan storing my business registration details to verify this business.',
     consentRequired: 'Please accept the consent to submit registration details.',
     // product step
     productTitle: 'Add your first listing (optional)',
@@ -817,7 +817,7 @@ const mr: typeof en = {
     regTypeNone: 'आत्ता वगळा',
     regNumber: 'नोंदणी क्रमांक',
     regDoc: 'प्रमाणपत्र (फोटो किंवा PDF, ऐच्छिक)',
-    consentPlaceholder: '[PLACEHOLDER — रिलीजपूर्वी वकील-मान्य DPDP संमती मजकूर टाका] पडताळणीसाठी माझे व्यवसाय नोंदणी तपशील Tourkokan कडे साठवण्यास मी संमती देतो/देते.',
+    consentPlaceholder: 'पडताळणीसाठी माझे व्यवसाय नोंदणी तपशील Tourkokan कडे साठवण्यास मी संमती देतो/देते.',
     consentRequired: 'नोंदणी तपशील सबमिट करण्यासाठी कृपया संमती स्वीकारा.',
     productTitle: 'तुमची पहिली लिस्टिंग जोडा (ऐच्छिक)',
     productSub: 'खोली, टूर, पदार्थ, सेवा — नंतर ॲपमध्ये आणखी जोडू शकता.',

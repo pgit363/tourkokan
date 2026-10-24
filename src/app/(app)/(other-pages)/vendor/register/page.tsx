@@ -20,6 +20,7 @@ import { useLang } from '@/context/LanguageContext'
 import {
   ApiError,
   BusinessCategory,
+  ProductAttributeSpec,
   ProductCategoryOption,
   setStoredUser,
   setToken,
@@ -60,6 +61,8 @@ interface WizardForm {
   productName: string
   productPrice: string
   productDesc: string
+  /** Values for the chosen product category's attribute_schema, keyed by attribute name. */
+  productAttributes: Record<string, string | string[] | boolean>
 }
 
 const EMPTY_FORM: WizardForm = {
@@ -69,6 +72,7 @@ const EMPTY_FORM: WizardForm = {
   image: null, logo: null,
   regType: '', regNumber: '', regDoc: null, consent: false,
   productCategoryId: '', productName: '', productPrice: '', productDesc: '',
+  productAttributes: {},
 }
 
 export default function VendorRegisterPage() {
@@ -134,6 +138,21 @@ export default function VendorRegisterPage() {
     if (step === 4 && (form.productName.trim() || form.productCategoryId)) {
       if (!form.productName.trim()) return v.productName
       if (!form.productCategoryId) return v.productCategory
+
+      // Catch required attributes here rather than letting the backend reject
+      // the whole submission on the final step.
+      const schema = productCats?.find((pc) => pc.id === form.productCategoryId)?.attribute_schema
+      for (const [key, spec] of Object.entries(schema ?? {})) {
+        if (!spec.required) continue
+        const value = form.productAttributes[key]
+        const empty =
+          spec.type === 'bool'
+            ? false // an unchecked box is a valid "false"
+            : spec.type === 'multi'
+              ? !Array.isArray(value) || value.length === 0
+              : typeof value !== 'string' || !value.trim()
+        if (empty) return spec.label
+      }
     }
     return ''
   }
@@ -176,6 +195,30 @@ export default function VendorRegisterPage() {
         fd.append('product[product_category_id]', String(form.productCategoryId))
         if (form.productPrice.trim()) fd.append('product[base_price]', form.productPrice.trim())
         if (form.productDesc.trim()) fd.append('product[description]', form.productDesc.trim())
+
+        // Attributes the chosen category defines. The backend rejects unknown
+        // keys, so only send what its schema declares, and skip blanks so an
+        // optional attribute left empty does not fail its type rule.
+        const schema = productCats?.find((pc) => pc.id === form.productCategoryId)?.attribute_schema
+        if (schema) {
+          for (const [key, spec] of Object.entries(schema)) {
+            const value = form.productAttributes[key]
+            if (spec.type === 'bool') {
+              fd.append(`product[attributes][${key}]`, value ? '1' : '0')
+            } else if (spec.type === 'multi') {
+              const picked = Array.isArray(value) ? value : []
+              // An empty multi must still be sent as an empty array, not omitted,
+              // or a required one looks absent rather than empty.
+              if (picked.length === 0) {
+                if (spec.required) fd.append(`product[attributes][${key}][]`, '')
+              } else {
+                picked.forEach((item) => fd.append(`product[attributes][${key}][]`, item))
+              }
+            } else if (typeof value === 'string' && value.trim()) {
+              fd.append(`product[attributes][${key}]`, value.trim())
+            }
+          }
+        }
       }
 
       await vendorApi.onboard(fd)
@@ -504,7 +547,12 @@ export default function VendorRegisterPage() {
                       <button
                         key={pc.id}
                         type="button"
-                        onClick={() => set('productCategoryId', form.productCategoryId === pc.id ? '' : pc.id)}
+                        onClick={() => {
+                          const next = form.productCategoryId === pc.id ? '' : pc.id
+                          // Attributes belong to a category, so values from the
+                          // previous pick would be rejected as unknown keys.
+                          setForm((f) => ({ ...f, productCategoryId: next, productAttributes: {} }))
+                        }}
                         className={`rounded-full border px-4 py-1.5 text-sm ${
                           form.productCategoryId === pc.id
                             ? 'border-primary-600 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
@@ -527,6 +575,14 @@ export default function VendorRegisterPage() {
                 <Field label={v.productDesc}>
                   <Textarea rows={3} value={form.productDesc} onChange={(e) => set('productDesc', e.target.value)} />
                 </Field>
+
+                <ProductAttributeFields
+                  schema={productCats.find((pc) => pc.id === form.productCategoryId)?.attribute_schema ?? null}
+                  values={form.productAttributes}
+                  onChange={(key, value) =>
+                    setForm((f) => ({ ...f, productAttributes: { ...f.productAttributes, [key]: value } }))
+                  }
+                />
               </>
             )}
           </>
@@ -564,6 +620,129 @@ export default function VendorRegisterPage() {
 }
 
 // ── small pieces ──────────────────────────────────────────────────────────────
+
+/**
+ * Renders one input per entry of a product category's attribute_schema.
+ *
+ * The backend validates submitted attributes against this schema and rejects
+ * unknown keys, so the form is generated from it rather than hard-coded — every
+ * category brings its own set, and twelve of them have required attributes.
+ */
+function ProductAttributeFields({
+  schema,
+  values,
+  onChange,
+}: {
+  schema: Record<string, ProductAttributeSpec> | null
+  values: Record<string, string | string[] | boolean>
+  onChange: (key: string, value: string | string[] | boolean) => void
+}) {
+  if (!schema || Object.keys(schema).length === 0) return null
+
+  return (
+    <>
+      {Object.entries(schema).map(([key, spec]) => {
+        const value = values[key]
+        const label = spec.required ? `${spec.label} *` : spec.label
+
+        if (spec.type === 'bool') {
+          return (
+            <label key={key} className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+              <input type="checkbox" checked={value === true} onChange={(e) => onChange(key, e.target.checked)} />
+              {spec.label}
+            </label>
+          )
+        }
+
+        if (spec.type === 'enum') {
+          return (
+            <Field key={key} label={label}>
+              <select
+                value={typeof value === 'string' ? value : ''}
+                onChange={(e) => onChange(key, e.target.value)}
+                className="block w-full rounded-2xl border-neutral-200 bg-white text-sm focus:border-primary-300 dark:border-neutral-700 dark:bg-neutral-900"
+              >
+                <option value="">—</option>
+                {(spec.options ?? []).map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )
+        }
+
+        if (spec.type === 'multi') {
+          const picked = Array.isArray(value) ? value : []
+          return (
+            <Field key={key} label={label}>
+              <div className="flex flex-wrap gap-2">
+                {(spec.options ?? []).map((opt) => {
+                  const on = picked.includes(opt)
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => onChange(key, on ? picked.filter((o) => o !== opt) : [...picked, opt])}
+                      className={`rounded-full border px-3 py-1 text-sm ${
+                        on
+                          ? 'border-primary-600 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-400 dark:border-neutral-700 dark:text-neutral-300'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  )
+                })}
+              </div>
+            </Field>
+          )
+        }
+
+        const hint = [
+          spec.min !== undefined ? `min ${spec.min}` : null,
+          spec.max !== undefined ? `max ${spec.max}` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+
+        if (spec.type === 'text') {
+          return (
+            <Field key={key} label={label} hint={hint || undefined}>
+              <Textarea
+                rows={3}
+                value={typeof value === 'string' ? value : ''}
+                onChange={(e) => onChange(key, e.target.value)}
+              />
+            </Field>
+          )
+        }
+
+        const numeric = spec.type === 'int' || spec.type === 'decimal'
+        return (
+          <Field key={key} label={label} hint={hint || undefined}>
+            <Input
+              type={spec.type === 'date' ? 'date' : spec.type === 'time' ? 'time' : 'text'}
+              inputMode={numeric ? (spec.type === 'int' ? 'numeric' : 'decimal') : undefined}
+              value={typeof value === 'string' ? value : ''}
+              onChange={(e) =>
+                onChange(
+                  key,
+                  spec.type === 'int'
+                    ? e.target.value.replace(/[^0-9]/g, '')
+                    : spec.type === 'decimal'
+                      ? e.target.value.replace(/[^0-9.]/g, '')
+                      : e.target.value
+                )
+              }
+            />
+          </Field>
+        )
+      })}
+    </>
+  )
+}
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
