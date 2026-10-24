@@ -561,6 +561,20 @@ export interface ProductAttributeSpec {
   options?: string[]
 }
 
+/** A product on one of the signed-in vendor's own sites. */
+export interface VendorProduct {
+  id: number
+  name: string
+  description?: string | null
+  base_price?: string | number | null
+  status?: boolean | number
+  attributes?: Record<string, unknown> | null
+  // Laravel serialises the eager-loaded relations in snake_case
+  product_category?: { id: number; name: string; code?: string; booking_type?: string } | null
+  site?: { id: number; name: string } | null
+  default_variant?: { price?: string | number | null } | null
+}
+
 export interface ProductCategoryOption {
   id: number
   name: string
@@ -611,5 +625,35 @@ export const vendorApi = {
       method: 'POST',
       body: JSON.stringify({ token: idToken, userEmail: email, language: 'en' }),
       skipAuth: true,
+    }),
+
+  // ── Vendor's own businesses and catalogue ──────────────────────────────────
+  // All three sit behind the backend's `vendor` middleware, so a signed-in user
+  // who has not onboarded gets an error rather than an empty list — which is how
+  // the UI tells "no businesses yet" from "not a vendor".
+
+  mySites: (page = 1) =>
+    apiFetch<{ data: Pagination<Site> }>('/v2/mySites', {
+      method: 'POST',
+      body: JSON.stringify({ page }),
+    }),
+
+  myProducts: (params: { site_id?: number; page?: number } = {}) =>
+    apiFetch<{ data: Pagination<VendorProduct> }>('/v2/myProducts', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    }),
+
+  addProduct: (data: {
+    site_id: number
+    product_category_id: number
+    name: string
+    description?: string
+    base_price?: string
+    attributes?: Record<string, unknown>
+  }) =>
+    apiFetch<{ data: VendorProduct }>('/v2/addProduct', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 }
