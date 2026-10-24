@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const res = await authApi.login(email, password)
+    if (!res?.access_token) throw new Error('Sign in failed. Please try again.')
     setToken(res.access_token)
     setStoredUser(res.user)
     setUser(res.user)
@@ -43,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginAsGuest = async () => {
     const guestName = `Guest_${Math.random().toString(36).slice(2, 10).toUpperCase()}`
     const res = await authApi.guestRegister(guestName)
+    if (!res?.access_token) throw new Error('Could not continue as guest. Please try again.')
     const guestUser = { ...res.user, isGuest: true }
     setToken(res.access_token)
     setStoredUser(guestUser)

@@ -60,6 +60,25 @@ interface FetchOptions extends RequestInit {
   skipAuth?: boolean
 }
 
+/**
+ * The backend's `message` is either a sentence or a map of field → messages
+ * (Laravel validation output). Flatten it into something displayable while
+ * keeping the per-field detail for forms that highlight individual inputs.
+ */
+function readApiMessage(message: unknown): { message: string; fieldErrors?: Record<string, string[]> } {
+  if (typeof message === 'string' && message.trim()) {
+    return { message }
+  }
+  if (message && typeof message === 'object') {
+    const fieldErrors = message as Record<string, string[]>
+    const flat = Object.values(fieldErrors)
+      .flat()
+      .filter((m): m is string => typeof m === 'string' && m.trim().length > 0)
+    if (flat.length) return { message: flat.join(' '), fieldErrors }
+  }
+  return { message: 'Request failed. Please try again.' }
+}
+
 export async function apiFetch<T = unknown>(path: string, options: FetchOptions = {}): Promise<T> {
   const { skipAuth, ...rest } = options
   const token = getToken()
@@ -98,6 +117,17 @@ export async function apiFetch<T = unknown>(path: string, options: FetchOptions 
     }
     const error = new ApiError(message, res.status, err?.errors, data)
     throw error
+  }
+
+  // The backend reports validation and business failures as HTTP 200 with
+  // { success: false, message }. Treat those as errors too — otherwise callers
+  // get a body whose `data` is undefined and crash reading fields off it
+  // (e.g. "Cannot read properties of undefined (reading 'access_token')")
+  // instead of showing the server's actual message.
+  const envelope = data as { success?: boolean; message?: unknown } | null
+  if (envelope?.success === false) {
+    const { message, fieldErrors } = readApiMessage(envelope.message)
+    throw new ApiError(message, res.status, fieldErrors, data)
   }
 
   return data as T
@@ -287,7 +317,14 @@ export const authApi = {
   }) => {
     const res = await apiFetch<{ data: AuthResponse }>('/v2/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ language: 'en', ...data }),
+      // The backend validates `password` with Laravel's `confirmed` rule, so it
+      // rejects the request unless a matching password_confirmation is sent.
+      // The forms collect a single password, so mirror it here.
+      body: JSON.stringify({
+        language: 'en',
+        ...data,
+        ...(data.password ? { password_confirmation: data.password } : {}),
+      }),
       skipAuth: true,
     })
     return res.data

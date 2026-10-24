@@ -665,13 +665,23 @@ function AuthCard({ onDone }: { onDone: () => void }) {
         await login(email.trim(), password)
         onDone()
       } else {
-        const res = await authApi.register({
+        await authApi.register({
           name: name.trim(),
           email: email.trim(),
           mobile: mobile.trim() || undefined,
           password,
         })
-        await adoptSession(res.access_token, res.user)
+        // Registering does not start a session: the backend only issues a token
+        // for guest signups, and answers a regular email signup with the user
+        // and no access_token. Sign in to get one — but the account may still
+        // need its email verified, so report that instead of failing opaquely.
+        try {
+          await login(email.trim(), password)
+          onDone()
+        } catch (loginErr) {
+          setMode('signin')
+          setError((loginErr as Error)?.message || v.errorGeneric)
+        }
       }
     } catch (err) {
       const apiErr = err as ApiError
