@@ -160,13 +160,14 @@ export default function AccountBusinessPage() {
 }
 
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
+  const { t } = useLang()
   return (
     <div>
       <h1 className="text-2xl font-semibold">{title}</h1>
       <div className="mt-6">{children}</div>
       <p className="mt-10 text-xs text-neutral-500">
         <Link href="/" className="hover:underline">
-          ← {title}
+          ← {t.vendor.successHome}
         </Link>
       </p>
     </div>
