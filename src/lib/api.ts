@@ -611,7 +611,8 @@ export const vendorApi = {
 
   /** Google Identity Services credential → backend session (JWT) */
   googleAuth: (idToken: string, email?: string) =>
-    apiFetch<{ data: AuthResponse }>('/v2/googleAuth', {
+    // Lives under the v2/auth group, same endpoint the Android app posts to.
+    apiFetch<{ data: AuthResponse }>('/v2/auth/googleAuth', {
       method: 'POST',
       body: JSON.stringify({ token: idToken, userEmail: email, language: 'en' }),
       skipAuth: true,
