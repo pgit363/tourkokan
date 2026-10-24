@@ -199,10 +199,20 @@ export default function DestinationsPage() {
     categoriesApi.list().then((res) => setCategories(res.data.data)).catch(() => {})
   }, [])
 
+  // Debounce the search box. Keying off `search` directly fired one request
+  // per keystroke; `debouncedSearch` settles 350ms after typing stops, by
+  // which point it matches `search` (which fetchSites reads).
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 350)
+    return () => clearTimeout(timer)
+  }, [search])
+
   useEffect(() => {
     fetchSites(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, selectedCategory])
+  }, [debouncedSearch, selectedCategory])
 
   const handleParentChange = (parentId: string) => {
     setSelectedParent(parentId)

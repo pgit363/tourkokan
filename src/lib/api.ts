@@ -1,10 +1,17 @@
 /**
  * Central API client for Tourkokan backend.
- * All requests go through the Next.js proxy rewrite:
- *   /api/proxy/:path* → ${NEXT_PUBLIC_API_URL}/api/:path*
+ *
+ * Requests go straight to the backend origin, NOT through the Next.js
+ * /api/proxy rewrite. A rewrite with an external destination is executed by
+ * the Cloudflare Worker, so every API call cost a Worker invocation (plus CPU
+ * and a subrequest) just to forward the request. The backend already sends
+ * permissive CORS headers, so the browser can call it directly and the Worker
+ * stays out of the data path entirely.
  */
 
-export const API_BASE = '/api/proxy'
+const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000').replace(/\/+$/, '')
+
+export const API_BASE = `${BACKEND_URL}/api`
 export const FTP_PATH =
   process.env.NEXT_PUBLIC_FTP_PATH ?? 'https://tourkokan-412490161095-eu-north-1-an.s3.eu-north-1.amazonaws.com/'
 

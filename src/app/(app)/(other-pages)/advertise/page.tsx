@@ -1,9 +1,8 @@
 'use client'
 
+import { API_BASE } from '@/lib/api'
 import { useLang } from '@/context/LanguageContext'
 import { useEffect, useRef, useState } from 'react'
-
-const API_BASE = '/api/proxy'
 
 interface BannerPackage {
   id: number

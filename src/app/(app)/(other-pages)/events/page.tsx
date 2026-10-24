@@ -120,10 +120,20 @@ export default function EventsPage() {
     }
   }
 
+  // Debounce the search box. Keying off `search` directly fired one request
+  // per keystroke; `debouncedSearch` settles 350ms after typing stops, by
+  // which point it matches `search` (which fetchEvents reads).
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 350)
+    return () => clearTimeout(timer)
+  }, [search])
+
   useEffect(() => {
     fetchEvents(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, filter])
+  }, [debouncedSearch, filter])
 
   const handleLoadMore = async () => {
     const next = page + 1

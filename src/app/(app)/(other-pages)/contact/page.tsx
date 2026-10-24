@@ -1,9 +1,8 @@
 'use client'
 
+import { API_BASE } from '@/lib/api'
 import { useLang } from '@/context/LanguageContext'
 import { useState } from 'react'
-
-const API_BASE = '/api/proxy'
 
 const ContactPage = () => {
   const { t } = useLang()

@@ -1,10 +1,9 @@
 'use client'
 
+import { API_BASE } from '@/lib/api'
 import { useLang } from '@/context/LanguageContext'
 import { useState } from 'react'
 import Link from 'next/link'
-
-const API_BASE = '/api/proxy'
 
 type Step = 'email' | 'otp' | 'done'
 
