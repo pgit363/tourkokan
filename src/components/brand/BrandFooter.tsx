@@ -56,7 +56,7 @@ const BrandFooter = () => {
     ],
     [t.footer.company]: [
       { label: t.footer.about, href: '/about' },
-      { label: t.footer.addPlace, href: '/download?reason=submit-place' },
+      { label: t.footer.addPlace, href: '/vendor/register' },
       { label: t.footer.listBusiness, href: '/subscription' },
       { label: t.footer.advertise, href: '/advertise' },
       { label: t.footer.contact, href: '/contact' },

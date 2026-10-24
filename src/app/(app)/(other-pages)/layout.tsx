@@ -1,6 +1,7 @@
 import Header from '@/components/Header/Header'
 import { Metadata } from 'next'
 import { ApplicationLayout } from '../application-layout'
+import VendorAcquireBanner from '@/components/brand/VendorAcquireBanner'
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -10,5 +11,12 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children, params }: { children: React.ReactNode; params: any }) {
-  return <ApplicationLayout header={<Header hasBorderBottom={true} />}>{children}</ApplicationLayout>
+  return (
+    <ApplicationLayout header={<Header hasBorderBottom={true} />}>
+      {children}
+      {/* Persistent "register your business" CTA across content pages — hides itself on
+          /vendor/register and /subscription. */}
+      <VendorAcquireBanner />
+    </ApplicationLayout>
+  )
 }
