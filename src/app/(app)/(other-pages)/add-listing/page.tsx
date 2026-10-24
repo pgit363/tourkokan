@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function AddListingPage() {
-  redirect('/download?reason=submit-place')
+  redirect('/vendor/register')
 }

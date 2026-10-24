@@ -11,10 +11,17 @@
 import { useLang } from '@/context/LanguageContext'
 import { BuildingStorefrontIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+// Pages that already lead the vendor into registration — showing the banner there is redundant.
+const HIDE_ON = ['/vendor/register', '/subscription']
 
 const VendorAcquireBanner = () => {
   const { t } = useLang()
   const v = t.vendor
+  const pathname = usePathname()
+
+  if (HIDE_ON.some((p) => pathname?.startsWith(p))) return null
 
   return (
     <section className="container py-14 lg:py-20">

@@ -19,6 +19,11 @@ export default function Page() {
       {/* Hero — Full screen app showcase */}
       <HeroSection />
 
+      {/* Vendor acquisition — list your business (surfaced right after the hero) */}
+      <section id="for-businesses">
+        <VendorAcquireBanner />
+      </section>
+
       {/* Features — What the app offers */}
       <section id="features">
         <FeaturesSection />
@@ -32,11 +37,6 @@ export default function Page() {
       {/* Testimonials — User reviews */}
       <section id="testimonials">
         <TestimonialsSection />
-      </section>
-
-      {/* Vendor acquisition — list your business (M7) */}
-      <section id="for-businesses">
-        <VendorAcquireBanner />
       </section>
 
       {/* Download CTA */}
