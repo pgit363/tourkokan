@@ -21,7 +21,6 @@ import {
   ApiError,
   BusinessCategory,
   ProductCategoryOption,
-  authApi,
   setStoredUser,
   setToken,
   vendorApi,
@@ -593,13 +592,8 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function AuthCard({ onDone }: { onDone: () => void }) {
   const { t } = useLang()
   const v = t.vendor
-  const { login, refreshUser } = useAuth()
+  const { refreshUser } = useAuth()
 
-  const [mode, setMode] = useState<'signin' | 'signup'>('signup')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [mobile, setMobile] = useState('')
-  const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const googleRef = useRef<HTMLDivElement>(null)
@@ -656,97 +650,21 @@ function AuthCard({ onDone }: { onDone: () => void }) {
     document.head.appendChild(script)
   }, [adoptSession, v.googleFailed])
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setBusy(true)
-    setError('')
-    try {
-      if (mode === 'signin') {
-        await login(email.trim(), password)
-        onDone()
-      } else {
-        await authApi.register({
-          name: name.trim(),
-          email: email.trim(),
-          mobile: mobile.trim() || undefined,
-          password,
-        })
-        // Registering does not start a session: the backend only issues a token
-        // for guest signups, and answers a regular email signup with the user
-        // and no access_token. Sign in to get one — but the account may still
-        // need its email verified, so report that instead of failing opaquely.
-        try {
-          await login(email.trim(), password)
-          onDone()
-        } catch (loginErr) {
-          setMode('signin')
-          setError((loginErr as Error)?.message || v.errorGeneric)
-        }
-      }
-    } catch (err) {
-      const apiErr = err as ApiError
-      const msg = (apiErr.body as { message?: unknown } | undefined)?.message
-      setError(
-        typeof msg === 'object' && msg !== null
-          ? Object.values(msg as Record<string, string[]>).flat().join(' ')
-          : (typeof msg === 'string' && msg) || apiErr.message || v.errorGeneric
-      )
-    } finally {
-      setBusy(false)
-    }
-  }
-
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-2xl font-semibold">{v.signInTitle}</h1>
       <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{v.signInSub}</p>
 
-      {GOOGLE_CLIENT_ID && (
-        <>
-          <div ref={googleRef} className="mt-6" />
-          <div className="my-5 flex items-center gap-3 text-xs uppercase text-neutral-400">
-            <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
-            {v.orDivider}
-            <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
-          </div>
-        </>
+      {/* Google is the only way in here: a listing is tied to a real account,
+          and guest sessions are deliberately not enough (see isRealUser). */}
+      {GOOGLE_CLIENT_ID ? (
+        <div ref={googleRef} className="mt-6" />
+      ) : (
+        <p className="mt-6 text-sm text-red-600">{v.googleFailed}</p>
       )}
 
-      <form onSubmit={submit} className="mt-6 space-y-4">
-        {mode === 'signup' && (
-          <Field label={v.name}>
-            <Input required value={name} onChange={(e) => setName(e.target.value)} />
-          </Field>
-        )}
-        <Field label={v.email}>
-          <Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </Field>
-        {mode === 'signup' && (
-          <Field label={v.mobile} hint={v.mobileHint}>
-            <Input
-              inputMode="numeric"
-              maxLength={10}
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value.replace(/[^0-9]/g, ''))}
-            />
-          </Field>
-        )}
-        <Field label={v.password}>
-          <Input required type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
-        </Field>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <ButtonPrimary type="submit" disabled={busy} className="w-full">
-          {busy ? t.common.loading : mode === 'signin' ? v.signIn : v.createAccount}
-        </ButtonPrimary>
-      </form>
-
-      <button
-        type="button"
-        className="mt-4 text-sm text-primary-600 hover:underline"
-        onClick={() => setMode((m) => (m === 'signin' ? 'signup' : 'signin'))}
-      >
-        {mode === 'signin' ? v.needAccount : v.haveAccount}
-      </button>
+      {busy && <p className="mt-4 text-sm text-neutral-500">{t.common.loading}</p>}
+      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
       <p className="mt-6 text-xs text-neutral-500">
         <Link href="/" className="hover:underline">

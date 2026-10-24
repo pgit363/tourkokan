@@ -308,28 +308,8 @@ export const authApi = {
     return res.data
   },
 
-  register: async (data: {
-    name: string
-    email?: string
-    mobile?: string
-    password?: string
-    language?: 'en' | 'mr'
-  }) => {
-    const res = await apiFetch<{ data: AuthResponse }>('/v2/auth/register', {
-      method: 'POST',
-      // The backend validates `password` with Laravel's `confirmed` rule, so it
-      // rejects the request unless a matching password_confirmation is sent.
-      // The forms collect a single password, so mirror it here.
-      body: JSON.stringify({
-        language: 'en',
-        ...data,
-        ...(data.password ? { password_confirmation: data.password } : {}),
-      }),
-      skipAuth: true,
-    })
-    return res.data
-  },
-
+  // Email/password registration is deliberately absent: sign-in is Google or
+  // guest only. Guest registration below is a separate backend path.
   guestRegister: async (name: string) => {
     const form = new FormData()
     form.append('name', name)
