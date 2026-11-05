@@ -34,7 +34,7 @@ export default function VendorGuard({ children }: { children: React.ReactNode })
   }, [isLoading, isRealUser, pathname, router])
 
   if (isLoading) {
-    return <p className="container py-16 text-sm text-neutral-500">{d.checking}</p>
+    return <p className="text-sm text-neutral-500">{d.checking}</p>
   }
 
   // The redirect above is in flight; render nothing rather than the dashboard.
@@ -44,7 +44,7 @@ export default function VendorGuard({ children }: { children: React.ReactNode })
   // forward, beats being bounced into a wizard with no explanation.
   if (!isVendor) {
     return (
-      <div className="container max-w-xl py-16">
+      <div className="max-w-xl">
         <h1 className="text-2xl font-semibold">{d.notVendorTitle}</h1>
         <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">{d.notVendorBody}</p>
         <ButtonPrimary href="/vendor/register" className="mt-6">

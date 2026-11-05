@@ -1,28 +1,20 @@
-import { ApplicationLayout } from '../(app)/application-layout'
 import VendorGuard from './VendorGuard'
-import VendorNavigation from './VendorNavigation'
+import VendorShell from './VendorShell'
 
 /**
- * `/vendor/*` — the vendor's own dashboard.
+ * `/vendor/*` — the vendor's own console.
  *
- * Its own route group rather than a page under `(app)/(other-pages)`, which would
- * drag `VendorAcquireBanner` along: a "register your business" strip underneath the
- * dashboard of someone who already has one. `/vendor/register` stays where it is —
- * it is acquisition, and the banner correctly hides itself there.
+ * Its own route group AND its own chrome. `ApplicationLayout` is deliberately not
+ * used: the public header and footer belong to the tourist site, and wearing them
+ * made the dashboard read as a page on tourkokan.com rather than somewhere a
+ * business owner works. `/vendor/register` stays outside this group — that is
+ * acquisition, and it should look like the website, because the person reading it
+ * is still a visitor.
  */
 export default function VendorLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ApplicationLayout>
-      <div className="bg-neutral-50 dark:bg-neutral-900">
-        <div className="border-b border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800">
-          <div className="container">
-            <VendorNavigation />
-          </div>
-        </div>
-        <div className="container pt-10 pb-24">
-          <VendorGuard>{children}</VendorGuard>
-        </div>
-      </div>
-    </ApplicationLayout>
+    <VendorShell>
+      <VendorGuard>{children}</VendorGuard>
+    </VendorShell>
   )
 }

@@ -452,6 +452,10 @@ const en = {
   // someone deciding whether to list, this talks to someone who already has.
   vendorDash: {
     title: 'Vendor dashboard',
+    vendorLabel: 'Vendor',
+    backToSite: 'Back to Tourkokan',
+    menu: 'Menu',
+    closeMenu: 'Close menu',
     navOverview: 'Overview',
     navBusinesses: 'Businesses',
     navProducts: 'Products',
@@ -1003,6 +1007,10 @@ const mr: typeof en = {
   },
   vendorDash: {
     title: 'विक्रेता डॅशबोर्ड',
+    vendorLabel: 'विक्रेता',
+    backToSite: 'Tourkokan वर परत',
+    menu: 'मेनू',
+    closeMenu: 'मेनू बंद करा',
     navOverview: 'आढावा',
     navBusinesses: 'व्यवसाय',
     navProducts: 'उत्पादने',
