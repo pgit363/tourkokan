@@ -376,6 +376,122 @@ export interface VendorLead {
   user?: { id: number; name: string; mobile?: string }
 }
 
+/** A vendor's own outlet. `Site` plus the fields only its owner is shown. */
+export interface VendorSite extends Site {
+  submission_status?: 'draft' | 'pending' | 'approved' | 'rejected'
+  rejection_reason?: string | null
+  is_primary?: boolean | number
+}
+
+/** A price point. Every product has at least one; the last cannot be deleted. */
+export interface ProductVariant {
+  id: number
+  name: string
+  price: string | number
+  sale_price?: string | number | null
+  sku?: string | null
+  stock?: number | null
+  min_order_qty?: number | null
+  max_order_qty?: number | null
+  is_default?: boolean | number
+  sort_order?: number | null
+}
+
+export interface ProductMedia {
+  id: number
+  path?: string | null
+  image?: string | null
+  title?: string | null
+  is_cover?: boolean | number
+  sort_order?: number | null
+}
+
+export type ProductStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'paused'
+
+/**
+ * `getProduct` — everything the editor needs in one call, including the category's
+ * own `attribute_schema`, so the form can render without a second round trip.
+ */
+export interface VendorProductDetail extends Omit<VendorProduct, 'status'> {
+  mr_name?: string | null
+  mr_description?: string | null
+  sale_price?: string | number | null
+  unit?: string | null
+  hsn_code?: string | null
+  tax_rate?: number | string | null
+  price_includes_tax?: boolean | number
+  available_from?: string | null
+  available_to?: string | null
+  sort_order?: number | null
+  status?: ProductStatus
+  rejection_reason?: string | null
+  site_id?: number
+  product_category_id?: number
+  variants?: ProductVariant[]
+  gallery?: ProductMedia[]
+  media?: ProductMedia[]
+}
+
+/** One day of a listing's activity. Quiet days are absent, never zero-filled. */
+export interface ProductDailyStat {
+  date: string
+  views: number
+  unique_views: number
+  leads: number
+  leads_call: number
+  leads_whatsapp: number
+  leads_directions: number
+  leads_enquiry: number
+}
+
+export interface ProductAnalytics {
+  from: string
+  to: string
+  product?: { id: number; name: string }
+  views?: { total: number; unique: number }
+  leads?: { total: number; call: number; whatsapp: number; directions: number; enquiry: number }
+  conversion_rate?: number
+  daily: ProductDailyStat[]
+}
+
+/**
+ * Everything a vendor may write on a product, shared by add and update.
+ *
+ * `attributes` is a JSON string, not an object: that is the form the server
+ * validates against the category's `attribute_schema`.
+ */
+export interface ProductWriteFields {
+  site_id?: number
+  product_category_id?: number
+  name?: string
+  mr_name?: string | null
+  description?: string | null
+  mr_description?: string | null
+  attributes?: string
+  base_price?: string | number | null
+  sale_price?: string | number | null
+  unit?: string | null
+  hsn_code?: string | null
+  tax_rate?: number | null
+  price_includes_tax?: boolean
+  available_from?: string | null
+  available_to?: string | null
+  sort_order?: number | null
+}
+
+export interface PlanOption {
+  id?: number
+  code: string
+  name: string
+  mr_name?: string | null
+  description?: string | null
+  price: string | number
+  currency?: string
+  billing_period?: string
+  limits?: Record<string, number | null>
+  is_active?: boolean | number
+}
+
 // ── Auth API ──────────────────────────────────────────────────────────────────
 
 export const authApi = {
@@ -650,7 +766,18 @@ export interface VendorProduct {
   status?: boolean | number
   attributes?: Record<string, unknown> | null
   // Laravel serialises the eager-loaded relations in snake_case
-  product_category?: { id: number; name: string; code?: string; booking_type?: string } | null
+  product_category?: {
+    id: number
+    name: string
+    code?: string
+    booking_type?: string
+    /**
+     * The form schema lives HERE, on the category relation — not at the product
+     * root, where the API contract's "full detail including attribute_schema"
+     * reads as if it might. The editor renders from this.
+     */
+    attribute_schema?: Record<string, ProductAttributeSpec> | null
+  } | null
   site?: { id: number; name: string } | null
   default_variant?: { price?: string | number | null } | null
 }
@@ -718,21 +845,17 @@ export const vendorApi = {
       body: JSON.stringify({ page }),
     }),
 
-  myProducts: (params: { site_id?: number; page?: number } = {}) =>
+  myProducts: (
+    params: { site_id?: number; status?: ProductStatus; search?: string; page?: number; per_page?: number } = {}
+  ) =>
     apiFetch<{ data: Pagination<VendorProduct> }>('/v2/myProducts', {
       method: 'POST',
       body: JSON.stringify(params),
     }),
 
-  addProduct: (data: {
-    site_id: number
-    product_category_id: number
-    name: string
-    description?: string
-    base_price?: string
-    attributes?: Record<string, unknown>
-  }) =>
-    apiFetch<{ data: VendorProduct }>('/v2/addProduct', {
+  /** Returns a DRAFT — media, variants and submit-for-review follow separately. */
+  addProduct: (data: ProductWriteFields & { site_id: number; product_category_id: number; name: string }) =>
+    apiFetch<{ data: VendorProductDetail }>('/v2/addProduct', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -772,4 +895,139 @@ export const vendorApi = {
       method: 'POST',
       body: JSON.stringify(target),
     }),
+
+  // ── Outlets ─────────────────────────────────────────────────────────────────
+
+  /**
+   * The outlet picker. Includes `pending` sites — a vendor builds a catalog while
+   * the business is under review, so only `rejected` blocks adding products.
+   *
+   * Paginated, like every list in this API: the rows are `res.data.data`. The
+   * server pages it even though a vendor has a handful of outlets, so a caller
+   * reading `res.data` as an array silently sees none at all.
+   */
+  mySubmissions: (page = 1) =>
+    apiFetch<{ data: Pagination<VendorSite> }>('/v2/mySubmissions', {
+      method: 'POST',
+      body: JSON.stringify({ page }),
+    }),
+
+  setPrimarySite: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/setPrimarySite', { method: 'POST', body: JSON.stringify({ id }) }),
+
+  /** Multipart: it may carry a replacement image or logo. */
+  updateMySubmission: (form: FormData) =>
+    apiFetch<{ data: VendorSite }>('/v2/updateMySubmission', { method: 'POST', body: form }),
+
+  deleteMySubmission: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/deleteMySubmission', { method: 'POST', body: JSON.stringify({ id }) }),
+
+  // ── Product taxonomy ────────────────────────────────────────────────────────
+
+  /** What this outlet may sell, resolved from the site's own business categories. */
+  allowedProductCategoriesForSite: (siteId: number) =>
+    apiFetch<{ data: ProductCategoryOption[] }>('/v2/allowedProductCategories', {
+      method: 'POST',
+      body: JSON.stringify({ site_id: siteId }),
+    }),
+
+  categoryAttributeSchema: (productCategoryId: number) =>
+    apiFetch<{ data: ProductCategoryOption }>('/v2/categoryAttributeSchema', {
+      method: 'POST',
+      body: JSON.stringify({ product_category_id: productCategoryId }),
+    }),
+
+  // ── Product editing ─────────────────────────────────────────────────────────
+
+  getProduct: (id: number) =>
+    apiFetch<{ data: VendorProductDetail }>('/v2/getProduct', { method: 'POST', body: JSON.stringify({ id }) }),
+
+  /**
+   * `attributes` goes up as a JSON string, which is what the server validates
+   * against the category schema. `status`, `is_featured`, `is_bookable` and
+   * `fulfilment_type` are not a vendor's to set — posting them is ignored, so the
+   * editor renders no control for them.
+   */
+  updateProduct: (data: ProductWriteFields & { id: number }) =>
+    apiFetch<{ data: VendorProductDetail }>('/v2/updateProduct', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  deleteProduct: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/deleteProduct', { method: 'POST', body: JSON.stringify({ id }) }),
+
+  submitProductForReview: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/submitProductForReview', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    }),
+
+  /** approved ⇄ paused. Anything else is not a vendor's switch to throw. */
+  toggleProductStatus: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/toggleProductStatus', { method: 'POST', body: JSON.stringify({ id }) }),
+
+  bulkProductStatus: (ids: number[], status: 'approved' | 'paused') =>
+    apiFetch<{ success: boolean }>('/v2/bulkProductStatus', {
+      method: 'POST',
+      body: JSON.stringify({ ids, status }),
+    }),
+
+  // ── Variants ────────────────────────────────────────────────────────────────
+
+  /** Omit `variant_id` to create. `is_default: true` clears the flag on the others. */
+  saveProductVariant: (data: {
+    id: number
+    variant_id?: number
+    name: string
+    price: string | number
+    sale_price?: string | number | null
+    sku?: string | null
+    stock?: number | null
+    is_default?: boolean
+    sort_order?: number
+  }) => apiFetch<{ data: ProductVariant }>('/v2/saveProductVariant', { method: 'POST', body: JSON.stringify(data) }),
+
+  /** The last variant cannot be deleted — the server answers 422. */
+  deleteProductVariant: (id: number, variantId: number) =>
+    apiFetch<{ success: boolean }>('/v2/deleteProductVariant', {
+      method: 'POST',
+      body: JSON.stringify({ id, variant_id: variantId }),
+    }),
+
+  // ── Media ───────────────────────────────────────────────────────────────────
+
+  /** One image per call, and the first one uploaded becomes the cover. */
+  uploadProductMedia: (form: FormData) =>
+    apiFetch<{ data: ProductMedia }>('/v2/uploadProductMedia', { method: 'POST', body: form }),
+
+  /** Deleting the cover promotes the next image server-side. */
+  deleteProductMedia: (id: number, mediaId: number) =>
+    apiFetch<{ success: boolean }>('/v2/deleteProductMedia', {
+      method: 'POST',
+      body: JSON.stringify({ id, media_id: mediaId }),
+    }),
+
+  setProductCover: (id: number, mediaId: number) =>
+    apiFetch<{ success: boolean }>('/v2/setProductCover', {
+      method: 'POST',
+      body: JSON.stringify({ id, media_id: mediaId }),
+    }),
+
+  /** Every image id, in the new order — a partial list is rejected. */
+  reorderProductMedia: (id: number, mediaIds: number[]) =>
+    apiFetch<{ success: boolean }>('/v2/reorderProductMedia', {
+      method: 'POST',
+      body: JSON.stringify({ id, media_ids: mediaIds }),
+    }),
+
+  // ── Analytics and plan ──────────────────────────────────────────────────────
+
+  productAnalytics: (id: number, params: { from?: string; to?: string } = {}) =>
+    apiFetch<{ data: ProductAnalytics }>('/v2/productAnalytics', {
+      method: 'POST',
+      body: JSON.stringify({ id, ...params }),
+    }),
+
+  listPlans: () => apiFetch<{ data: PlanOption[] }>('/v2/listPlans', { method: 'POST', body: '{}' }),
 }

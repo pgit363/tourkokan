@@ -14,11 +14,13 @@ export default function VendorNavigation() {
   const d = t.vendorDash
   const pathname = usePathname()
 
-  // Only routes that exist. Businesses, products, analytics and plan land next —
-  // their labels are already translated in `vendorDash`, so adding each is one line.
   const items = [
     { href: '/vendor', label: d.navOverview },
+    { href: '/vendor/businesses', label: d.navBusinesses },
+    { href: '/vendor/products', label: d.navProducts },
     { href: '/vendor/leads', label: d.navLeads },
+    { href: '/vendor/analytics', label: d.navAnalytics },
+    { href: '/vendor/plan', label: d.navPlan },
   ]
 
   return (

@@ -9,10 +9,6 @@ const navigation = [
     href: '/account',
   },
   {
-    title: 'My Business',
-    href: '/account-business',
-  },
-  {
     title: 'Saved listings',
     href: '/account-savelists',
   },

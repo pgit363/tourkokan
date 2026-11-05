@@ -306,7 +306,7 @@ export default function VendorRegisterPage() {
             // Already onboarded — send them to manage what they have instead of
             // walking them through first-time registration a second time.
             <>
-              <ButtonPrimary href="/account-business">{v.myBusinessTitle}</ButtonPrimary>
+              <ButtonPrimary href="/vendor">{v.myBusinessTitle}</ButtonPrimary>
               <span className="text-sm text-neutral-500">{v.addProduct}</span>
             </>
           ) : (

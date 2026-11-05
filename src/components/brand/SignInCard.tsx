@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLang } from '@/context/LanguageContext'
 import { ApiError, setStoredUser, setToken, vendorApi } from '@/lib/api'
 import ButtonPrimary from '@/shared/ButtonPrimary'
-import { ErrorMessage, Field, FieldGroup, Label } from '@/shared/fieldset'
+import { Field, FieldGroup, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -147,7 +147,7 @@ export default function SignInCard({
               onChange={(e) => setPassword(e.target.value)}
             />
           </Field>
-          {error && <ErrorMessage>{error}</ErrorMessage>}
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
         </FieldGroup>
 
         <ButtonPrimary type="submit" disabled={busy} className="mt-6 w-full">

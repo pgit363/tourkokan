@@ -14,7 +14,7 @@ const BrandHeader = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [guestModalOpen, setGuestModalOpen] = useState(false)
   const [pendingHref, setPendingHref] = useState<string | null>(null)
-  const { user, isLoggedIn, logout } = useAuth()
+  const { user, isLoggedIn, isVendor, logout } = useAuth()
   const { lang, setLang, t } = useLang()
   const pathname = usePathname()
   const router = useRouter()
@@ -109,7 +109,7 @@ const BrandHeader = () => {
                       <>
                         <div className="my-1 border-t border-neutral-100 dark:border-neutral-700" />
                         <Link href="/account" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">{t.header.myAccount}</Link>
-                        <Link href="/account-business" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">{t.vendor.myBusinessTitle}</Link>
+                        {isVendor && <Link href="/vendor" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">{t.vendor.myBusinessTitle}</Link>}
                         <Link href="/account-savelists" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-700">{t.header.savedPlaces}</Link>
                       </>
                     )}
@@ -183,7 +183,7 @@ const BrandHeader = () => {
                   {!user?.isGuest && (
                     <>
                       <Link href="/account" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">{t.header.myAccount}</Link>
-                      <Link href="/account-business" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">{t.vendor.myBusinessTitle}</Link>
+                      {isVendor && <Link href="/vendor" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">{t.vendor.myBusinessTitle}</Link>}
                       <Link href="/account-savelists" onClick={() => setMenuOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800">{t.header.savedPlaces}</Link>
                     </>
                   )}
