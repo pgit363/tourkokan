@@ -3,7 +3,9 @@
 import { useLang } from '@/context/LanguageContext'
 import { ApiError, LeadType, VendorLead, vendorApi } from '@/lib/api'
 import { Badge } from '@/shared/Badge'
-import { Table, TableBody, TableCell, TableRow } from '@/shared/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/table'
+import { relativeTime } from '@/lib/relativeTime'
+import { SkeletonRows } from './Loaders'
 import { useCallback, useEffect, useState } from 'react'
 
 /**
@@ -67,12 +69,14 @@ export default function LeadRows({ limit, filterable = false }: { limit?: number
     }
   }
 
-  if (!leads) return <p className="text-sm text-neutral-500">{t.common.loading}</p>
   if (error) return <p className="text-sm text-red-600">{error}</p>
 
-  const rows = typeof limit === 'number' ? leads.slice(0, limit) : leads
+  const loading = leads === null
+  const rows = leads ? (typeof limit === 'number' ? leads.slice(0, limit) : leads) : []
 
-  if (!rows.length) return <p className="text-sm text-neutral-500">{d.noLeads}</p>
+  if (!loading && !rows.length) return <p className="text-sm text-neutral-500">{d.noLeads}</p>
+
+  const columns = filterable ? 5 : 4
 
   return (
     <div>
@@ -93,39 +97,53 @@ export default function LeadRows({ limit, filterable = false }: { limit?: number
         </div>
       )}
 
-      {/* `table.tsx` offsets itself against the container's --gutter. */}
-      <div className="[--gutter:0px]">
-        <Table dense>
-          <TableBody>
-            {rows.map((lead) => (
-              <TableRow key={lead.id}>
-                <TableCell>
-                  <Badge color={lead.is_read ? 'zinc' : 'blue'}>{typeLabel(lead.lead_type)}</Badge>
+      <Table dense striped className="text-sm">
+        <TableHead>
+          <TableRow>
+            <TableHeader className="text-xs tracking-wide uppercase">{d.columnHow}</TableHeader>
+            <TableHeader className="text-xs tracking-wide uppercase">{d.columnListing}</TableHeader>
+            <TableHeader className="text-xs tracking-wide uppercase">{d.columnMessage}</TableHeader>
+            <TableHeader className="text-right text-xs tracking-wide uppercase">{d.whenLabel}</TableHeader>
+            {filterable && <TableHeader className="text-right text-xs tracking-wide uppercase">{d.columnActions}</TableHeader>}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {loading && <SkeletonRows columns={columns} rows={limit ?? 4} />}
+          {rows.map((lead) => (
+            <TableRow key={lead.id}>
+              <TableCell>
+                <Badge color={lead.is_read ? 'zinc' : 'blue'}>{typeLabel(lead.lead_type)}</Badge>
+              </TableCell>
+              <TableCell className="font-medium">{lead.product?.name ?? d.leadUnknownProduct}</TableCell>
+              {/* The one column that may hold a sentence, so it is allowed to wrap
+                  within a bound rather than stretching the table sideways. */}
+              <TableCell className="max-w-xs text-neutral-500">
+                <span className="line-clamp-2 whitespace-normal">{lead.message ?? '—'}</span>
+              </TableCell>
+              <TableCell className="text-right whitespace-nowrap text-neutral-500">
+                {relativeTime(lead.created_at, { justNow: d.justNow, yesterday: d.yesterday })}
+              </TableCell>
+              {filterable && (
+                <TableCell className="text-right">
+                  {lead.is_read ? (
+                    <span className="text-neutral-400">—</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => markRead(lead.id)}
+                      className="text-primary-600 hover:underline dark:text-primary-400"
+                    >
+                      {d.markRead}
+                    </button>
+                  )}
                 </TableCell>
-                <TableCell className="font-medium">{lead.product?.name ?? d.leadUnknownProduct}</TableCell>
-                <TableCell className="text-neutral-500">{lead.user?.name ?? '—'}</TableCell>
-                <TableCell className="max-w-xs truncate text-neutral-500">{lead.message ?? ''}</TableCell>
-                <TableCell className="text-right text-neutral-400">
-                  {new Date(lead.created_at).toLocaleDateString()}
-                </TableCell>
-                {filterable && (
-                  <TableCell className="text-right">
-                    {!lead.is_read && (
-                      <button
-                        type="button"
-                        onClick={() => markRead(lead.id)}
-                        className="text-sm text-primary-600 hover:underline dark:text-primary-400"
-                      >
-                        {d.markRead}
-                      </button>
-                    )}
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {filterable && <p className="mt-4 text-xs text-neutral-500">{d.leadsPrivacyNote}</p>}
 
       {typeof limit !== 'number' && !busy && page < lastPage && (
         <button

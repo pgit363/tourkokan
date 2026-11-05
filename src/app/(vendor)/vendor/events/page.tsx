@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import StatusBadge from '../../StatusBadge'
+import { SkeletonRows } from '../../Loaders'
 
 const STATUSES: EventStatus[] = ['draft', 'pending', 'approved', 'rejected', 'cancelled', 'completed']
 
@@ -81,7 +82,7 @@ export default function VendorEventsPage() {
     }
   }
 
-  if (!events) return <p className="text-sm text-neutral-500">{t.common.loading}</p>
+  const loading = events === null
 
   // Dates arrive as datetimes; a vendor does not need to read 00:00:00 twice.
   const when = (e: Event) => {
@@ -115,65 +116,66 @@ export default function VendorEventsPage() {
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      {!events.length ? (
+      {!loading && !(events ?? []).length ? (
         <p className="text-sm text-neutral-500">{d.noEvents}</p>
       ) : (
-        <div className="[--gutter:0px]">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeader>{d.eventTitle}</TableHeader>
-                <TableHeader>{d.whenLabel}</TableHeader>
-                <TableHeader>{d.taluka}</TableHeader>
-                <TableHeader />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {events.map((e) => {
-                const s = String(e.status)
-                const canCancel = s !== 'cancelled' && s !== 'completed'
-                const canDelete = s === 'draft' || s === 'rejected' || s === 'cancelled'
+        <Table dense striped className="text-sm">
+          <TableHead>
+            <TableRow>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.eventTitle}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.columnStatus}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.whenLabel}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.taluka}</TableHeader>
+              <TableHeader className="text-right text-xs tracking-wide uppercase">{d.columnActions}</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading && <SkeletonRows columns={5} />}
+            {(events ?? []).map((e) => {
+              const s = String(e.status)
+              const canCancel = s !== 'cancelled' && s !== 'completed'
+              const canDelete = s === 'draft' || s === 'rejected' || s === 'cancelled'
 
-                return (
-                  <TableRow key={e.id}>
-                    <TableCell>
-                      <Link href={`/vendor/events/${e.id}`} className="font-medium hover:underline">
-                        {e.title}
-                      </Link>
-                      <div className="mt-1">
-                        <StatusBadge status={s} kind="site" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-neutral-500">{when(e)}</TableCell>
-                    <TableCell className="text-neutral-500">{e.taluka ?? '—'}</TableCell>
-                    <TableCell className="space-x-3 text-right whitespace-nowrap">
-                      {canCancel && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => setConfirm({ id: e.id, kind: 'cancel' })}
-                          className="text-sm text-amber-700 hover:underline disabled:opacity-40 dark:text-amber-400"
-                        >
-                          {d.cancelEvent}
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => setConfirm({ id: e.id, kind: 'delete' })}
-                          className="text-sm text-red-600 hover:underline disabled:opacity-40"
-                        >
-                          {d.deleteLabel}
-                        </button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
+              return (
+                <TableRow key={e.id}>
+                  <TableCell className="max-w-xs font-medium">
+                    <Link href={`/vendor/events/${e.id}`} className="hover:underline">
+                      {e.title}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={s} kind="site" />
+                  </TableCell>
+                  <TableCell className="text-neutral-500 tabular-nums">{when(e)}</TableCell>
+                  <TableCell className="text-neutral-500">{e.taluka ?? '—'}</TableCell>
+                  <TableCell className="space-x-3 text-right whitespace-nowrap">
+                    {canCancel && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => setConfirm({ id: e.id, kind: 'cancel' })}
+                        className="text-amber-700 hover:underline disabled:opacity-40 dark:text-amber-400"
+                      >
+                        {d.cancelEvent}
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => setConfirm({ id: e.id, kind: 'delete' })}
+                        className="text-red-600 hover:underline disabled:opacity-40"
+                      >
+                        {d.deleteLabel}
+                      </button>
+                    )}
+                    {!canCancel && !canDelete && <span className="text-neutral-400">—</span>}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
       )}
 
       {!busy && page < lastPage && (

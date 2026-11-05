@@ -9,6 +9,7 @@ import ProductBasicsForm, { BasicsValue, basicsFrom } from '../../../ProductBasi
 import ProductMediaManager from '../../../ProductMediaManager'
 import ProductVariants from '../../../ProductVariants'
 import StatusBadge from '../../../StatusBadge'
+import { PanelSkeleton } from '../../../Loaders'
 
 /**
  * `/vendor/products/[id]` — the editor.
@@ -83,7 +84,7 @@ export default function EditProductPage() {
   }
 
   if (!product) {
-    return error ? <p className="text-sm text-red-600">{error}</p> : <p className="text-sm text-neutral-500">{t.common.loading}</p>
+    return error ? <p className="text-sm text-red-600">{error}</p> : <div className="max-w-2xl space-y-6"><PanelSkeleton lines={4} /><PanelSkeleton lines={3} /></div>
   }
 
   const media = product.gallery ?? product.media ?? []

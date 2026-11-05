@@ -4,6 +4,7 @@ import { useLang } from '@/context/LanguageContext'
 import { ApiError, ProductAnalytics, VendorProduct, vendorApi } from '@/lib/api'
 import { useCallback, useEffect, useState } from 'react'
 import DailyBars from '../../DailyBars'
+import { Loading, StatsSkeleton } from '../../Loaders'
 
 /**
  * `/vendor/analytics` — one listing at a time.
@@ -57,7 +58,14 @@ export default function VendorAnalyticsPage() {
     if (productId) load(productId)
   }, [productId, load])
 
-  if (!products) return <p className="text-sm text-neutral-500">{t.common.loading}</p>
+  if (!products) {
+    return (
+      <div className="space-y-10">
+        <h1 className="text-2xl font-semibold">{d.navAnalytics}</h1>
+        <StatsSkeleton count={4} />
+      </div>
+    )
+  }
 
   const channels = stats?.leads
     ? [
@@ -91,7 +99,7 @@ export default function VendorAnalyticsPage() {
       )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {busy && <p className="text-sm text-neutral-500">{t.common.loading}</p>}
+      {busy && <Loading label={t.common.loading} />}
 
       {stats && !busy && (
         <>

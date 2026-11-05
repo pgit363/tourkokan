@@ -3,8 +3,11 @@
 import { useLang } from '@/context/LanguageContext'
 import { ApiError, VendorSite, vendorApi } from '@/lib/api'
 import ButtonPrimary from '@/shared/ButtonPrimary'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/table'
+import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import StatusBadge from '../../StatusBadge'
+import { SkeletonRows } from '../../Loaders'
 
 /**
  * `/vendor/businesses` — the vendor's outlets.
@@ -51,7 +54,7 @@ export default function VendorBusinessesPage() {
     }
   }
 
-  if (!sites) return <p className="text-sm text-neutral-500">{t.common.loading}</p>
+  const loading = sites === null
 
   return (
     <div>
@@ -62,50 +65,63 @@ export default function VendorBusinessesPage() {
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      {!sites.length ? (
+      {!loading && !(sites ?? []).length ? (
         <p className="text-sm text-neutral-500">{d.noBusinesses}</p>
       ) : (
-        <ul className="space-y-4">
-          {sites.map((site) => (
-            <li key={site.id} className="rounded-2xl border border-neutral-200 p-5 dark:border-neutral-700">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-medium">{site.name}</h2>
-                    <StatusBadge status={site.submission_status} kind="site" />
-                    {!!site.is_primary && <span className="text-xs text-neutral-500">· {d.primary}</span>}
-                  </div>
+        <Table dense striped className="text-sm">
+          <TableHead>
+            <TableRow>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.navBusinesses}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.columnStatus}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.primary}</TableHeader>
+              <TableHeader className="text-right text-xs tracking-wide uppercase">{d.columnActions}</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading && <SkeletonRows columns={4} />}
+            {(sites ?? []).map((site) => (
+              <TableRow key={site.id}>
+                <TableCell className="max-w-sm font-medium">
+                  {site.name}
+                  {/* The reason sits under the name rather than in a column of its
+                      own: only a rejected outlet has one, so a column would be empty
+                      for everyone else. */}
                   {site.submission_status === 'rejected' && site.rejection_reason && (
-                    <p className="mt-2 text-sm text-red-600">
+                    <span className="mt-1 block whitespace-normal text-xs font-normal text-red-600">
                       {d.reasonLabel}: {site.rejection_reason}
-                    </p>
+                    </span>
                   )}
-                </div>
-
-                <div className="flex items-center gap-4">
+                </TableCell>
+                <TableCell>
+                  <StatusBadge status={site.submission_status} kind="site" />
+                </TableCell>
+                <TableCell className="text-neutral-500">
+                  {site.is_primary ? d.primary : '—'}
+                </TableCell>
+                <TableCell className="space-x-3 text-right whitespace-nowrap">
                   {!site.is_primary && site.submission_status === 'approved' && (
                     <button
                       type="button"
                       disabled={busy}
                       onClick={() => makePrimary(site.id)}
-                      className="text-sm text-primary-600 hover:underline disabled:opacity-50 dark:text-primary-400"
+                      className="text-primary-600 hover:underline disabled:opacity-50 dark:text-primary-400"
                     >
                       {d.makePrimary}
                     </button>
                   )}
                   {site.submission_status !== 'rejected' && (
-                    <a
+                    <Link
                       href={`/vendor/products/new?site=${site.id}`}
-                      className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+                      className="text-primary-600 hover:underline dark:text-primary-400"
                     >
                       {d.newProduct}
-                    </a>
+                    </Link>
                   )}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       )}
     </div>
   )

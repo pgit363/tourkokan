@@ -34,6 +34,7 @@ export default function VendorSidebar({ onNavigate }: { onNavigate?: () => void 
   const d = t.vendorDash
   const pathname = usePathname()
   const [business, setBusiness] = useState<string | null>(null)
+  const [plan, setPlan] = useState<string | null>(null)
 
   useEffect(() => {
     let alive = true
@@ -47,6 +48,13 @@ export default function VendorSidebar({ onNavigate }: { onNavigate?: () => void 
       })
       // Silent: a missing name costs a line of context, and this is chrome — it must
       // never be what stops the dashboard rendering.
+      .catch(() => {})
+
+    vendorApi
+      .mySubscription()
+      .then((res) => {
+        if (alive) setPlan(res.data.plan?.name ?? null)
+      })
       .catch(() => {})
     return () => {
       alive = false
@@ -66,13 +74,21 @@ export default function VendorSidebar({ onNavigate }: { onNavigate?: () => void 
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 py-5">
-        <div className="flex items-center gap-2">
-          <Logo className="w-24" />
-          <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-primary-700 uppercase dark:bg-primary-900/30 dark:text-primary-300">
-            {d.vendorLabel}
-          </span>
-        </div>
-        {business && <p className="mt-3 truncate text-sm text-neutral-500">{business}</p>}
+        <Logo className="w-24" />
+        {/* "for business" rather than a VENDOR chip: it is the same product, seen
+            from the other side of the counter. */}
+        <p className="mt-1 text-xs tracking-wide text-neutral-400 uppercase">{d.forBusiness}</p>
+
+        {(business || plan) && (
+          <div className="mt-4">
+            {business && <p className="truncate text-sm font-medium text-neutral-700 dark:text-neutral-200">{business}</p>}
+            {plan && (
+              <span className="mt-1 inline-block rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-primary-700 uppercase dark:bg-primary-900/30 dark:text-primary-300">
+                {plan}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 px-3">

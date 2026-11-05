@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLang } from '@/context/LanguageContext'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import { usePathname, useRouter } from 'next/navigation'
+import { Loading } from './Loaders'
 import { useEffect } from 'react'
 
 /**
@@ -34,7 +35,7 @@ export default function VendorGuard({ children }: { children: React.ReactNode })
   }, [isLoading, isRealUser, pathname, router])
 
   if (isLoading) {
-    return <p className="text-sm text-neutral-500">{d.checking}</p>
+    return <Loading label={d.checking} />
   }
 
   // The redirect above is in flight; render nothing rather than the dashboard.

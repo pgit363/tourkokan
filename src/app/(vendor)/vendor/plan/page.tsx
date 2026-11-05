@@ -3,6 +3,7 @@
 import { useLang } from '@/context/LanguageContext'
 import { ApiError, PlanOption, VendorSubscriptionInfo, vendorApi } from '@/lib/api'
 import { Badge } from '@/shared/Badge'
+import { PanelSkeleton } from '../../Loaders'
 import { useEffect, useState } from 'react'
 
 /**
@@ -35,7 +36,15 @@ export default function VendorPlanPage() {
   }, [t.vendor.errorGeneric])
 
   if (error && !info) return <p className="text-sm text-red-600">{error}</p>
-  if (!info) return <p className="text-sm text-neutral-500">{t.common.loading}</p>
+  if (!info) {
+    return (
+      <div className="max-w-2xl space-y-10">
+        <h1 className="text-2xl font-semibold">{d.planAndLimits}</h1>
+        <PanelSkeleton lines={2} />
+        <PanelSkeleton lines={4} />
+      </div>
+    )
+  }
 
   const quotaLabel: Record<string, string> = {
     max_sites: d.quotaMaxSites,

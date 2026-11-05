@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 import EventForm from '../../../EventForm'
 import { EventFormValue, eventFormData, eventFormFrom } from '@/lib/eventForm'
 import StatusBadge from '../../../StatusBadge'
+import { PanelSkeleton } from '../../../Loaders'
 
 /**
  * `/vendor/events/[id]` — the editor.
@@ -79,7 +80,7 @@ export default function EditEventPage() {
     return error ? (
       <p className="text-sm text-red-600">{error}</p>
     ) : (
-      <p className="text-sm text-neutral-500">{t.common.loading}</p>
+      <div className="max-w-2xl space-y-6"><PanelSkeleton lines={4} /><PanelSkeleton lines={3} /></div>
     )
   }
 

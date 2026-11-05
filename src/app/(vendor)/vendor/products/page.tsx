@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import StatusBadge from '../../StatusBadge'
+import { SkeletonRows } from '../../Loaders'
 
 const STATUSES: ProductStatus[] = ['draft', 'pending', 'approved', 'paused', 'rejected']
 
@@ -97,10 +98,10 @@ export default function VendorProductsPage() {
     }
   }
 
-  if (!products) return <p className="text-sm text-neutral-500">{t.common.loading}</p>
+  const loading = products === null
 
   // Only these two can be flipped, so a selection of anything else offers nothing.
-  const toggleable = products.filter((p) => picked.includes(p.id) && ['approved', 'paused'].includes(String(p.status)))
+  const toggleable = (products ?? []).filter((p) => picked.includes(p.id) && ['approved', 'paused'].includes(String(p.status)))
 
   return (
     <div>
@@ -168,84 +169,85 @@ export default function VendorProductsPage() {
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      {!products.length ? (
+      {!loading && !(products ?? []).length ? (
         <p className="text-sm text-neutral-500">{d.noProducts}</p>
       ) : (
-        <div className="[--gutter:0px]">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeader className="w-8" />
-                <TableHeader>{d.productName}</TableHeader>
-                <TableHeader>{d.category}</TableHeader>
-                <TableHeader>{d.price}</TableHeader>
-                <TableHeader>{d.outlet}</TableHeader>
-                <TableHeader />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {products.map((p) => {
-                const s = String(p.status)
-                return (
-                  <TableRow key={p.id}>
-                    <TableCell>
-                      <input
-                        type="checkbox"
-                        checked={picked.includes(p.id)}
-                        onChange={(e) =>
-                          setPicked((prev) => (e.target.checked ? [...prev, p.id] : prev.filter((x) => x !== p.id)))
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/vendor/products/${p.id}`} className="font-medium hover:underline">
-                        {p.name}
-                      </Link>
-                      <div className="mt-1">
-                        <StatusBadge status={s} />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-neutral-500">{p.product_category?.name ?? '—'}</TableCell>
-                    <TableCell className="text-neutral-500 tabular-nums">
-                      {p.default_variant?.price ?? p.base_price ?? '—'}
-                    </TableCell>
-                    <TableCell className="text-neutral-500">{p.site?.name ?? '—'}</TableCell>
-                    <TableCell className="space-x-3 text-right whitespace-nowrap">
-                      {(s === 'approved' || s === 'paused') && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => act(() => vendorApi.toggleProductStatus(p.id))}
-                          className="text-sm text-primary-600 hover:underline disabled:opacity-40 dark:text-primary-400"
-                        >
-                          {s === 'approved' ? d.pause : d.resume}
-                        </button>
-                      )}
-                      {(s === 'draft' || s === 'rejected') && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => act(() => vendorApi.submitProductForReview(p.id))}
-                          className="text-sm text-primary-600 hover:underline disabled:opacity-40 dark:text-primary-400"
-                        >
-                          {d.submitForReview}
-                        </button>
-                      )}
+        <Table dense striped className="text-sm">
+          <TableHead>
+            <TableRow>
+              <TableHeader className="w-8" />
+              <TableHeader className="text-xs tracking-wide uppercase">{d.productName}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.columnStatus}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.category}</TableHeader>
+              <TableHeader className="text-right text-xs tracking-wide uppercase">{d.price}</TableHeader>
+              <TableHeader className="text-xs tracking-wide uppercase">{d.outlet}</TableHeader>
+              <TableHeader className="text-right text-xs tracking-wide uppercase">{d.columnActions}</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading && <SkeletonRows columns={7} />}
+            {(products ?? []).map((p) => {
+              const s = String(p.status)
+              return (
+                <TableRow key={p.id}>
+                  <TableCell>
+                    <input
+                      type="checkbox"
+                      aria-label={p.name}
+                      checked={picked.includes(p.id)}
+                      onChange={(e) =>
+                        setPicked((prev) => (e.target.checked ? [...prev, p.id] : prev.filter((x) => x !== p.id)))
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="max-w-xs font-medium">
+                    <Link href={`/vendor/products/${p.id}`} className="hover:underline">
+                      {p.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={s} />
+                  </TableCell>
+                  <TableCell className="text-neutral-500">{p.product_category?.name ?? '—'}</TableCell>
+                  <TableCell className="text-right text-neutral-500 tabular-nums">
+                    {p.default_variant?.price ?? p.base_price ?? '—'}
+                  </TableCell>
+                  <TableCell className="text-neutral-500">{p.site?.name ?? '—'}</TableCell>
+                  <TableCell className="space-x-3 text-right whitespace-nowrap">
+                    {(s === 'approved' || s === 'paused') && (
                       <button
                         type="button"
                         disabled={busy}
-                        onClick={() => setConfirmId(p.id)}
-                        className="text-sm text-red-600 hover:underline disabled:opacity-40"
+                        onClick={() => act(() => vendorApi.toggleProductStatus(p.id))}
+                        className="text-primary-600 hover:underline disabled:opacity-40 dark:text-primary-400"
                       >
-                        {d.deleteLabel}
+                        {s === 'approved' ? d.pause : d.resume}
                       </button>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                    )}
+                    {(s === 'draft' || s === 'rejected') && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => act(() => vendorApi.submitProductForReview(p.id))}
+                        className="text-primary-600 hover:underline disabled:opacity-40 dark:text-primary-400"
+                      >
+                        {d.submitForReview}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setConfirmId(p.id)}
+                      className="text-red-600 hover:underline disabled:opacity-40"
+                    >
+                      {d.deleteLabel}
+                    </button>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
       )}
 
       {!busy && page < lastPage && (
