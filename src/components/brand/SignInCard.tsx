@@ -99,8 +99,12 @@ export default function SignInCard({
             const data = res.data as { access_token?: string; user?: unknown } | undefined
             if (!data?.access_token) throw new Error(a.googleFailed)
             await adoptSession(data.access_token, data.user)
-          } catch {
-            setError(a.googleFailed)
+          } catch (err) {
+            // Show what the server said. `googleAuth` answers with a specific
+            // reason — an unrecognised OAuth client, a missing audience config,
+            // an expired token — and replacing all of them with "please try
+            // again" leaves the one person who could fix it with nothing to go on.
+            setError(err instanceof ApiError && err.message ? err.message : a.googleFailed)
           } finally {
             setBusy(false)
           }
