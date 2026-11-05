@@ -3,12 +3,12 @@
 /**
  * /vendor/register — first-time vendor onboarding wizard (M5).
  *
- * Google sign-in (when NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID is set) or email
- * sign-in/sign-up, then one combined submission: business details + optional
- * government verification + optional first listing. Everything posts to
- * POST /v2/vendorOnboard, which the backend only admits for accounts with zero
- * existing sites and an X-App-Source: web header — established vendors are
- * pointed at the app.
+ * Sign in (shared `SignInCard`: email and password, plus Google when
+ * NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID is set), then one combined submission:
+ * business details + optional government verification + optional first listing.
+ * Everything posts to POST /v2/vendorOnboard, which the backend only admits for
+ * accounts with zero existing sites and an X-App-Source: web header — an
+ * established vendor belongs in /vendor, not back through this wizard.
  *
  * The vendor contact gate (403 missing_profile_fields) is handled inline: the
  * wizard asks for exactly the missing fields and retries, mirroring the app's
@@ -22,20 +22,18 @@ import {
   BusinessCategory,
   ProductAttributeSpec,
   ProductCategoryOption,
-  setStoredUser,
-  setToken,
   vendorApi,
 } from '@/lib/api'
 import ProductAttributeFields from '@/components/brand/ProductAttributeFields'
+import SignInCard from '@/components/brand/SignInCard'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import ButtonSecondary from '@/shared/ButtonSecondary'
 import Input from '@/shared/Input'
 import Textarea from '@/shared/Textarea'
 import { CheckCircleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID
 
 type Phase = 'landing' | 'auth' | 'wizard' | 'success'
 type RegType = '' | 'udyam' | 'gstin' | 'shop_act'
@@ -325,11 +323,16 @@ export default function VendorRegisterPage() {
   // ── auth ───────────────────────────────────────────────────────────────────
   if (phase === 'auth' && !isRealUser) {
     return (
-      <AuthCard
-        onDone={() => {
-          setPhase('wizard')
-        }}
-      />
+      <div className="mx-auto max-w-md px-4 py-16">
+        {/* The wizard asks for a sign-in for a reason of its own, so it keeps its
+            own heading; the form itself is the site-wide one. */}
+        <SignInCard title={v.signInTitle} subtitle={v.signInSub} onDone={() => setPhase('wizard')} />
+        <p className="mt-6 text-xs text-neutral-500">
+          <Link href="/" className="hover:underline">
+            {v.successHome}
+          </Link>
+        </p>
+      </div>
     )
   }
 
@@ -672,93 +675,3 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-/**
- * Sign-in / sign-up card. Google Identity Services renders its button only
- * when NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID is configured; the email forms are the
- * always-available path (backend: /v2/auth/login, /v2/auth/register).
- */
-function AuthCard({ onDone }: { onDone: () => void }) {
-  const { t } = useLang()
-  const v = t.vendor
-  const { refreshUser } = useAuth()
-
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const googleRef = useRef<HTMLDivElement>(null)
-
-  const adoptSession = useCallback(
-    async (accessToken: string, sessionUser: unknown) => {
-      setToken(accessToken)
-      if (sessionUser) setStoredUser(sessionUser as Parameters<typeof setStoredUser>[0])
-      await refreshUser()
-      onDone()
-    },
-    [refreshUser, onDone]
-  )
-
-  // Google Identity Services — loaded on demand, silently absent without a client id
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID || !googleRef.current) return
-    const scriptId = 'google-gsi'
-    const init = () => {
-      const g = (window as unknown as { google?: { accounts?: { id?: {
-        initialize: (o: object) => void
-        renderButton: (el: HTMLElement, o: object) => void
-      } } } }).google
-      if (!g?.accounts?.id || !googleRef.current) return
-      g.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async (resp: { credential?: string }) => {
-          if (!resp.credential) return
-          setBusy(true)
-          setError('')
-          try {
-            const res = await vendorApi.googleAuth(resp.credential)
-            const data = res.data as { access_token?: string; user?: unknown } | undefined
-            if (!data?.access_token) throw new Error(v.googleFailed)
-            await adoptSession(data.access_token, data.user)
-          } catch {
-            setError(v.googleFailed)
-          } finally {
-            setBusy(false)
-          }
-        },
-      })
-      g.accounts.id.renderButton(googleRef.current, { theme: 'outline', size: 'large', width: 320 })
-    }
-    if (document.getElementById(scriptId)) {
-      init()
-      return
-    }
-    const script = document.createElement('script')
-    script.id = scriptId
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.onload = init
-    document.head.appendChild(script)
-  }, [adoptSession, v.googleFailed])
-
-  return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-semibold">{v.signInTitle}</h1>
-      <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{v.signInSub}</p>
-
-      {/* Google is the only way in here: a listing is tied to a real account,
-          and guest sessions are deliberately not enough (see isRealUser). */}
-      {GOOGLE_CLIENT_ID ? (
-        <div ref={googleRef} className="mt-6" />
-      ) : (
-        <p className="mt-6 text-sm text-red-600">{v.googleFailed}</p>
-      )}
-
-      {busy && <p className="mt-4 text-sm text-neutral-500">{t.common.loading}</p>}
-      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-
-      <p className="mt-6 text-xs text-neutral-500">
-        <Link href="/" className="hover:underline">
-          {t.vendor.successHome}
-        </Link>
-      </p>
-    </div>
-  )
-}

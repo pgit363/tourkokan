@@ -152,6 +152,18 @@ export class ApiError extends Error {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+/**
+ * What a user is allowed to be, by code — `vendor`, `admin`, `superadmin`.
+ *
+ * `code` is the stable identifier; `name` is display text an admin can rename.
+ * Gate on the code, never on the name or the id.
+ */
+export interface Role {
+  id: number
+  name: string
+  code: string
+}
+
 export interface User {
   id: number
   name: string
@@ -162,7 +174,15 @@ export interface User {
   dob?: string
   isVerified?: boolean
   isGuest?: boolean
+  /** Legacy single-role column. Meaningless to the UI without an id→code map — use `roles`. */
   role_id?: number
+  /**
+   * Present on `/v2/auth/login` (via the backend's `createNewToken`) and on
+   * `/v2/user-profile`, where `PreMiddleware` eager-loads it. Optional because a
+   * session cached by an older build of this site has no such key — see
+   * `AuthContext`, which refreshes rather than treating that as "no roles".
+   */
+  roles?: Role[]
   uid?: string
 }
 
@@ -294,6 +314,66 @@ export interface Pagination<T> {
   last_page: number
   per_page: number
   total: number
+}
+
+// ── Vendor dashboard types ────────────────────────────────────────────────────
+
+/** One plan limit and how much of it is spent. `limit: null` means unmetered. */
+export interface VendorQuota {
+  limit: number | null
+  used?: number
+  remaining?: number | null
+  exceeded?: boolean
+}
+
+export interface VendorPlan {
+  code: string
+  name: string
+  mr_name?: string | null
+  description?: string | null
+  price: number | string
+  currency: string
+  billing_period: string
+}
+
+export interface VendorSubscription {
+  starts_at: string | null
+  ends_at: string | null
+  days_remaining: number | null
+  status: string
+  auto_renew: boolean
+  early_adopter: boolean
+}
+
+export interface VendorSubscriptionInfo {
+  plan: VendorPlan | null
+  subscription: VendorSubscription | null
+  /** Keyed by the backend's limit codes: `max_sites`, `max_products`, … */
+  usage: Record<string, VendorQuota>
+}
+
+export interface VendorUsageStats {
+  from: string
+  to: string
+  listings: { total: number; live: number; draft: number; pending: number; rejected: number; paused: number }
+  views: { total: number; unique: number }
+  leads: { total: number; call: number; whatsapp: number; directions: number; enquiry: number }
+  /** Leads per hundred views, already rounded by the server. */
+  conversion_rate: number
+}
+
+export type LeadType = 'call' | 'whatsapp' | 'directions' | 'enquiry'
+
+export interface VendorLead {
+  id: number
+  product_id: number
+  lead_type: LeadType
+  message?: string | null
+  platform?: string | null
+  is_read: boolean
+  created_at: string
+  product?: { id: number; name: string; mr_name?: string | null; site_id?: number }
+  user?: { id: number; name: string; mobile?: string }
 }
 
 // ── Auth API ──────────────────────────────────────────────────────────────────
@@ -655,5 +735,41 @@ export const vendorApi = {
     apiFetch<{ data: VendorProduct }>('/v2/addProduct', {
       method: 'POST',
       body: JSON.stringify(data),
+    }),
+
+  // ── Dashboard reads ─────────────────────────────────────────────────────────
+
+  /** Views, leads and listing counts over a date range (default: the server's own). */
+  myUsageStats: (params: { from?: string; to?: string } = {}) =>
+    apiFetch<{ data: VendorUsageStats }>('/v2/myUsageStats', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    }),
+
+  mySubscription: () =>
+    apiFetch<{ data: VendorSubscriptionInfo }>('/v2/mySubscription', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    }),
+
+  /**
+   * Enquiries. `unread_count` is merged into the paginator payload by the server
+   * rather than sent alongside it, so the badge needs no second request.
+   */
+  myLeads: (params: { product_id?: number; lead_type?: LeadType; unread_only?: boolean; page?: number } = {}) =>
+    apiFetch<{ data: Pagination<VendorLead> & { unread_count: number } }>('/v2/myLeads', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    }),
+
+  /**
+   * One enquiry, or every unread one. Both shapes are the server's — `{all: true}`
+   * returns `{marked: n}` rather than the lead, so neither is worth typing beyond
+   * "it worked"; the caller refetches.
+   */
+  markLeadRead: (target: { id: number } | { all: true }) =>
+    apiFetch<{ success: boolean; data?: unknown }>('/v2/markLeadRead', {
+      method: 'POST',
+      body: JSON.stringify(target),
     }),
 }
