@@ -1,4 +1,4 @@
-import { PlayStoreBadge } from '@/components/brand/AppBadges'
+import VendorStartCta from '@/components/brand/VendorStartCta'
 import { CheckIcon } from '@heroicons/react/24/solid'
 import { Metadata } from 'next'
 
@@ -7,8 +7,13 @@ import { Metadata } from 'next'
  *
  * Content mirrors the backend launch plans (PlanSeeder) and the vendor onboarding flow:
  * Free is live for the launch year; Starter/Growth are seeded but inactive, with pricing
- * that will be finalised on the lead data the platform is collecting. Vendors onboard from
- * the mobile app, so every CTA points there.
+ * that will be finalised on the lead data the platform is collecting.
+ *
+ * Every CTA points at /vendor/register. It used to point at the Play Store, which
+ * stopped being true when onboarding moved to the web — `vendorOnboard` refuses a
+ * non-web client outright, so the store link led somewhere that could not take a
+ * registration. `listPlans` is behind the vendor middleware, so a public page cannot
+ * read the real tiers: this copy is kept in step with PlanSeeder by hand.
  */
 
 type Plan = {
@@ -69,16 +74,16 @@ const plans: Plan[] = [
 
 const steps = [
   {
-    title: 'Get the app & request access',
-    body: 'Download TourKokan, sign in, and ask to become a vendor — one tap from your profile.',
+    title: 'Register your business',
+    body: 'Sign in on the website and fill one short form — business details, location and contact.',
   },
   {
-    title: 'Add your business',
-    body: 'Tell us about your place. Our team reviews and approves it, usually within a day.',
+    title: 'We review it',
+    body: 'Our team checks your listing and approves it, usually within a day. You can add products while you wait.',
   },
   {
     title: 'List your products & services',
-    body: 'Rooms, thalis, tour packages, taxi trips, repairs — add them with photos and prices.',
+    body: 'Rooms, thalis, tour packages, taxi trips, repairs — add them with photos and prices from your dashboard.',
   },
   {
     title: 'Receive direct leads',
@@ -147,7 +152,7 @@ const Page = () => {
 
       <div className="mt-auto">
         {plan.badge === 'Live now' ? (
-          <PlayStoreBadge width={180} />
+          <VendorStartCta />
         ) : (
           <span className="inline-flex rounded-full bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-500 dark:bg-neutral-700 dark:text-neutral-300">
             Available soon
@@ -172,7 +177,7 @@ const Page = () => {
           your products and services, and get enquiries directly — no commission.
         </p>
         <div className="mt-8 flex justify-center">
-          <PlayStoreBadge width={190} />
+          <VendorStartCta />
         </div>
       </header>
 
@@ -241,10 +246,10 @@ const Page = () => {
       <section className="mx-auto mt-20 max-w-3xl rounded-3xl bg-primary-600 px-8 py-12 text-center">
         <h2 className="text-2xl font-bold text-white sm:text-3xl">Ready to get discovered?</h2>
         <p className="mt-3 text-primary-50">
-          Download TourKokan and request vendor access to start listing today.
+          Register your business and start listing today — free for the launch year.
         </p>
         <div className="mt-8 flex justify-center">
-          <PlayStoreBadge width={190} />
+          <VendorStartCta light />
         </div>
       </section>
     </div>

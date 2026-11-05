@@ -6,6 +6,7 @@ import Logo from '@/shared/Logo'
 import {
   ArrowLeftIcon,
   BuildingStorefrontIcon,
+  CalendarDaysIcon,
   ChartBarIcon,
   CreditCardIcon,
   InboxIcon,
@@ -56,6 +57,7 @@ export default function VendorSidebar({ onNavigate }: { onNavigate?: () => void 
     { href: '/vendor', label: d.navOverview, Icon: Squares2X2Icon },
     { href: '/vendor/businesses', label: d.navBusinesses, Icon: BuildingStorefrontIcon },
     { href: '/vendor/products', label: d.navProducts, Icon: TagIcon },
+    { href: '/vendor/events', label: d.navEvents, Icon: CalendarDaysIcon },
     { href: '/vendor/leads', label: d.navLeads, Icon: InboxIcon },
     { href: '/vendor/analytics', label: d.navAnalytics, Icon: ChartBarIcon },
     { href: '/vendor/plan', label: d.navPlan, Icon: CreditCardIcon },

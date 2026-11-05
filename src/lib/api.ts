@@ -270,6 +270,27 @@ export interface Event {
   share_count?: number
   favourite_count?: number
   taluka?: string
+  venue_name?: string | null
+  latitude?: number | string | null
+  longitude?: number | string | null
+  is_multi_day?: boolean
+  /** Raw S3 path. Do not build a URL from it — use `banner_image_url`. */
+  banner_image?: string | null
+  /** Server-computed, ready for an <img src>. */
+  banner_image_url?: string | null
+  gallery?: string[] | null
+  video_url?: string | null
+  entry_fee?: number | string | null
+  registration_required?: boolean
+  registration_link?: string | null
+  registration_deadline?: string | null
+  max_participants?: number | null
+  tags?: string[] | null
+  organizer_name?: string | null
+  organizer_phone?: string | null
+  organizer_email?: string | null
+  contact_person_name?: string | null
+  contact_person_phone?: string | null
   eventType?: { id: number; name: string }
   site?: Site
   user?: User
@@ -306,6 +327,26 @@ export interface Comment {
   users?: User
   comments?: Comment[]
   created_at?: string
+}
+
+/** The eight talukas an event may be held in — the server rejects anything else. */
+export const EVENT_TALUKAS = [
+  'Devgad',
+  'Kudal',
+  'Malvan',
+  'Sawantwadi',
+  'Vengurla',
+  'Dodamarg',
+  'Kankavli',
+  'Vaibhavvadi',
+] as const
+
+export type EventStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'cancelled' | 'completed'
+
+export interface EventType {
+  id: number
+  name: string
+  mr_name?: string | null
 }
 
 export interface Pagination<T> {
@@ -615,11 +656,32 @@ export const eventsApi = {
   get: (slug: string) =>
     apiFetch<{ data: Event }>(`/v2/events/${slug}`, { method: 'GET' }),
 
-  create: (data: Partial<Event>) =>
-    apiFetch<{ data: Event }>('/v2/createEvent', {
+  /** Event types for the picker. */
+  types: () => apiFetch<{ data: EventType[] }>('/v2/eventTypeDD', { method: 'POST', body: '{}' }),
+
+  /** The organiser's own events, whatever their status. Paginated like `list`. */
+  mine: (params: { status?: EventStatus; per_page?: number; page?: number } = {}) =>
+    apiFetch<{ data: Pagination<Event> }>('/v2/myEvents', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(params),
     }),
+
+  /**
+   * FormData, not JSON: these carry `banner_image` as a file upload, and the
+   * contract is multipart whenever one is attached. A submitted event is always
+   * `pending` — a vendor cannot publish straight to the public calendar.
+   */
+  create: (form: FormData) => apiFetch<{ data: Event }>('/v2/createEvent', { method: 'POST', body: form }),
+
+  update: (form: FormData) => apiFetch<{ data: Event }>('/v2/updateEvent', { method: 'POST', body: form }),
+
+  /** Owner only, and refused on an event already cancelled or completed. */
+  cancel: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/cancelEvent', { method: 'POST', body: JSON.stringify({ id }) }),
+
+  /** Owner only, and only while `draft`, `rejected` or `cancelled`. */
+  remove: (id: number) =>
+    apiFetch<{ success: boolean }>('/v2/deleteEvent', { method: 'POST', body: JSON.stringify({ id }) }),
 
   like: (id: number) =>
     apiFetch<{ data: { liked: boolean; like_count: number } }>('/v2/likeEvent', {

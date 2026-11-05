@@ -19,7 +19,7 @@ export default function StatusBadge({ status, kind = 'listing' }: { status?: Sta
 
   if (!status) return null
 
-  const map: Record<string, { label: string; color: 'green' | 'amber' | 'red' | 'zinc' }> = {
+  const map: Record<string, { label: string; color: 'green' | 'amber' | 'red' | 'zinc' | 'blue' }> = {
     approved: {
       label: kind === 'listing' ? d.statusLive : d.statusApproved,
       color: 'green',
@@ -28,6 +28,9 @@ export default function StatusBadge({ status, kind = 'listing' }: { status?: Sta
     rejected: { label: d.statusRejected, color: 'red' },
     draft: { label: d.statusDraft, color: 'zinc' },
     paused: { label: d.statusPaused, color: 'zinc' },
+    // Events only. Without these the chip printed the raw lowercase status.
+    cancelled: { label: d.statusCancelled, color: 'zinc' },
+    completed: { label: d.statusCompleted, color: 'blue' },
   }
 
   const entry = map[status]
