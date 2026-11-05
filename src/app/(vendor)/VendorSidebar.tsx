@@ -13,8 +13,9 @@ import {
   Squares2X2Icon,
   TagIcon,
 } from '@heroicons/react/24/outline'
-import Link from 'next/link'
+import Link, { useLinkStatus } from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Spinner } from './Loaders'
 import { useEffect, useState } from 'react'
 
 /**
@@ -111,6 +112,7 @@ export default function VendorSidebar({ onNavigate }: { onNavigate?: () => void 
             >
               <Icon className="h-5 w-5 shrink-0" />
               {label}
+              <NavPending />
             </Link>
           )
         })}
@@ -127,4 +129,19 @@ export default function VendorSidebar({ onNavigate }: { onNavigate?: () => void 
       </div>
     </div>
   )
+}
+
+/**
+ * A spinner on the item that was just clicked, for as long as that route is
+ * still loading.
+ *
+ * `useLinkStatus` only reports anything from inside the `<Link>` it belongs to,
+ * which is why this is its own component. It is the piece that makes navigation
+ * feel answered: the skeletons explain what is coming, this says the click
+ * landed.
+ */
+function NavPending() {
+  const { pending } = useLinkStatus()
+  if (!pending) return null
+  return <Spinner className="ml-auto h-3.5 w-3.5 border-2" />
 }

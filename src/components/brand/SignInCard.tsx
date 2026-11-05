@@ -151,7 +151,14 @@ export default function SignInCard({
         </FieldGroup>
 
         <ButtonPrimary type="submit" disabled={busy} className="mt-6 w-full">
-          {busy ? a.signingIn : a.signIn}
+          {busy ? (
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              {a.signingIn}
+            </span>
+          ) : (
+            a.signIn
+          )}
         </ButtonPrimary>
       </form>
 

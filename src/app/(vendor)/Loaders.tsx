@@ -1,6 +1,6 @@
 'use client'
 
-import { TableCell, TableRow } from '@/shared/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/table'
 
 /**
  * The dashboard's loading states.
@@ -87,6 +87,59 @@ export function PanelSkeleton({ lines = 4 }: { lines?: number }) {
         {Array.from({ length: lines }, (_, i) => (
           <Bar key={i} className={`h-4 ${['w-full', 'w-5/6', 'w-2/3', 'w-3/4'][i % 4]}`} />
         ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * A whole table, header included, for a route that has not mounted yet.
+ *
+ * `loading.tsx` runs before any component knows what the columns are called, so
+ * the headers are bars too. It still reserves the right number of them, which is
+ * the point: the shape on screen is the shape that arrives.
+ */
+export function TableSkeleton({ columns, rows = 5 }: { columns: number; rows?: number }) {
+  return (
+    <Table dense striped className="text-sm">
+      <TableHead>
+        <TableRow aria-hidden>
+          {Array.from({ length: columns }, (_, c) => (
+            <TableHeader key={c}>
+              <Bar className="h-3 w-16" />
+            </TableHeader>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <SkeletonRows columns={columns} rows={rows} />
+      </TableBody>
+    </Table>
+  )
+}
+
+/** A list route between the click and the first paint: title, toolbar, table. */
+export function ListPageSkeleton({ columns = 5 }: { columns?: number }) {
+  return (
+    <div>
+      <Bar className="h-7 w-48" />
+      <div className="mt-6 mb-5 flex gap-3">
+        <Bar className="h-9 w-56 rounded-2xl" />
+        <Bar className="h-9 w-32 rounded-2xl" />
+      </div>
+      <TableSkeleton columns={columns} />
+    </div>
+  )
+}
+
+/** A form or detail route between the click and the first paint. */
+export function FormPageSkeleton() {
+  return (
+    <div className="max-w-2xl">
+      <Bar className="h-7 w-52" />
+      <div className="mt-6 space-y-6">
+        <PanelSkeleton lines={4} />
+        <PanelSkeleton lines={3} />
       </div>
     </div>
   )

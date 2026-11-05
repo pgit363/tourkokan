@@ -7,6 +7,7 @@ import { AttributeValues, attributesAsJson, firstMissingAttribute, normalizeAttr
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Field, FieldGroup, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
+import { Spinner } from './Loaders'
 import Textarea from '@/shared/Textarea'
 import { useState } from 'react'
 
@@ -250,7 +251,14 @@ export default function ProductBasicsForm({
       )}
 
       <ButtonPrimary type="submit" disabled={busy} className="mt-8">
-        {busy ? t.common.saving : submitLabel}
+        {busy ? (
+          <span className="inline-flex items-center gap-2">
+            <Spinner className="h-4 w-4 border-2" />
+            {t.common.saving}
+          </span>
+        ) : (
+          submitLabel
+        )}
       </ButtonPrimary>
     </form>
   )
