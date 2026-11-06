@@ -41,7 +41,7 @@ const socialLinks = [
 ]
 
 const BrandFooter = () => {
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, isVendor } = useAuth()
   const { t } = useLang()
   const router = useRouter()
   const [guestModalOpen, setGuestModalOpen] = useState(false)
@@ -152,8 +152,24 @@ const BrandFooter = () => {
             ))}
           </div>
 
+          {/* Vendor way in.
+              Separate from the header's "Sign in", which opens the guest modal —
+              a guest session is explicitly not enough to reach /vendor, so a
+              business owner following it ends up in the wrong place. This goes
+              straight to the real sign-in form, or to the dashboard for someone
+              already signed in as a vendor. */}
+          <div className="mt-12 flex flex-col items-center justify-between gap-4 rounded-2xl border border-neutral-200 px-5 py-4 sm:flex-row dark:border-neutral-800">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">{t.footer.vendorLoginHint}</p>
+            <Link
+              href={isVendor ? '/vendor' : '/login?next=%2Fvendor'}
+              className="inline-flex shrink-0 items-center rounded-full border border-primary-600 px-5 py-2 text-sm font-medium text-primary-700 transition hover:bg-primary-50 dark:border-primary-400 dark:text-primary-300 dark:hover:bg-primary-900/20"
+            >
+              {isVendor ? t.vendorDash.title : t.footer.vendorLogin}
+            </Link>
+          </div>
+
           {/* Bottom bar */}
-          <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-neutral-100 pt-8 sm:flex-row dark:border-neutral-800">
+          <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t border-neutral-100 pt-8 sm:flex-row dark:border-neutral-800">
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               © {new Date().getFullYear()} Tourkokan. {t.footer.rights}
             </p>

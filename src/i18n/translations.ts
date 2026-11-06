@@ -56,6 +56,8 @@ const en = {
     madeWith: 'Made with ❤️ for Kokan',
     downloadApp: 'Download App',
     iosSoon: 'iOS coming soon',
+    vendorLogin: 'Vendor login',
+    vendorLoginHint: 'Already listed with us? Manage your business.',
   },
   destinations: {
     pageTitle: 'Explore Kokan Destinations',
@@ -684,6 +686,8 @@ const mr: typeof en = {
     madeWith: 'कोकणाच्या प्रेमातून ❤️ घडवलेलं',
     downloadApp: 'अॅप डाउनलोड करा',
     iosSoon: 'iOS लवकरच येत आहे',
+    vendorLogin: 'विक्रेता लॉगिन',
+    vendorLoginHint: 'आमच्याकडे नोंदणी केली आहे? तुमचा व्यवसाय व्यवस्थापित करा.',
   },
   destinations: {
     pageTitle: 'कोकणची स्वर्गीय सफर अनुभवा!',
